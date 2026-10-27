@@ -1,0 +1,30 @@
+---
+title: "Exercício 2 — Questões de revisão: regressão linear"
+author: "Nome do(a) aluno(a)"
+---
+
+Entrega original: 01/11/2024.
+
+**1.** O que é e para que serve a análise de regressão? (1 parágrafo)
+
+**2.** Explique as potencialidades e as limitações do coeficiente de determinação ($R^2$). (1 parágrafo)
+
+**3.** Identifique a alternativa correta em relação aos pressupostos da regressão linear:
+
+a) O pressuposto da linearidade assume que a relação entre X e Y pode ser descrita por um modelo linear nos parâmetros (o que permite incluir, por exemplo, $X^2$ ou $\log X$).\
+b) A regressão linear permite a inclusão de variáveis independentes com correlação perfeita ($r = 1$) entre si.\
+c) A homocedasticidade exige que os resíduos do modelo tenham distribuição normal.
+
+**4.** A regressão linear permite modelar a variação de variáveis dependentes discretas e contínuas. Identifique a alternativa correta:
+
+a) A regressão serve somente para analisar o padrão de associação entre uma variável dependente categórica e um conjunto de variáveis independentes contínuas.\
+b) Uma das principais motivações para aprender regressão linear é a sua ampla aplicação em trabalhos empíricos em ciência política e a sua facilidade de interpretação.\
+c) Para que os coeficientes estimados sejam confiáveis, não é importante respeitar os pressupostos do modelo.\
+d) A regressão linear é muito sensível à violação dos seus pressupostos e isso explica a sua limitada aplicação na pesquisa empírica observacional.
+
+**5.** Sobre o coeficiente de determinação, identifique a alternativa correta:
+
+a) O coeficiente de determinação indica o impacto de Y sobre X.\
+b) Quanto maior for o coeficiente de determinação, maior será o impacto das variáveis independentes sobre a variação da variável dependente.\
+c) Um $R^2$ alto não indica, necessariamente, que o modelo foi bem especificado.\
+d) Assim como o coeficiente de correlação ($r$), o coeficiente de determinação pode assumir valores positivos e negativos.

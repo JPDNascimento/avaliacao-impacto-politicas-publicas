@@ -1,0 +1,93 @@
+---
+title: "Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card & Krueger, 1994)"
+author: "Nome do(a) aluno(a)"
+---
+
+# Instruções
+
+As respostas devem ser entregues como um relatório automatizado gerado em Quarto (html, pdf ou word). Entrega original: 12/12/2024, às 23h59.
+
+# Exercício - Diferenças em Diferenças
+
+**Aumentar o salário mínimo reduz o emprego?**
+
+Vamos replicar o estudo de Card e Krueger (1994), que analisa o impacto do aumento do salário mínimo em New Jersey (NJ), comparando com o estado vizinho da Pensilvânia, onde não houve aumento. Em 1º de abril de 1992, NJ aumentou o salário mínimo de US\$ 4,25 para US\$ 5,05 por hora.
+
+A amostra é de 410 restaurantes de *fast food* (Burger King, KFC, Roy Rogers e Wendy's) em NJ e no leste da Pensilvânia, entrevistados em duas rodadas: (1) fevereiro e março de 1992, pouco antes do aumento, e (2) novembro e dezembro de 1992, cerca de oito meses depois.
+
+## Faça uma regressão linear para estimar o efeito causal do aumento do salário mínimo usando o desenho de diferenças em diferenças visto em aula.
+
+Lembre-se da fórmula:
+
+$$
+y = \beta_0 + \beta_1 D + \beta_2 T + \beta_3 (D \times T) + \beta_4 X + \varepsilon
+$$
+
+- $y$ = variável resultado: emprego em tempo integral equivalente (FTE) do restaurante (`emptot`)
+- $D$ = tratamento: restaurante em NJ (1) ou na Pensilvânia (0) (`nj`)
+- $T$ = tempo: antes (0) ou depois (1) do aumento do salário (`postperiod`)
+- $X$ = covariáveis (controles)
+
+# Importando o banco
+
+```{r message = FALSE, warning = FALSE}
+# install.packages(c("haven", "lmtest", "sandwich")) # instale os pacotes caso necessário
+library(haven)
+library(lmtest)   # coeftest()
+library(sandwich) # erros-padrão clusterizados
+
+d <- read_dta("../dados/CK1994_longformat.dta")
+```
+
+# Rodando o modelo 1 (sem controles)
+
+```{r}
+mod <- lm(emptot ~         # Emprego FTE do restaurante
+            nj +           # Restaurante em New Jersey (=1) ou na Pensilvânia (=0)
+            postperiod +   # Antes do aumento do salário (=0) ou depois do aumento (=1)
+            nj:postperiod, # Interação: o estimador de diferenças em diferenças
+          data = d)
+
+summary(mod)
+
+# Cada restaurante aparece duas vezes (antes e depois), então os erros-padrão
+# devem ser clusterizados por restaurante (variável ID)
+coeftest(mod, vcov = vcovCL(mod, cluster = ~ ID))
+```
+
+# Rodando o modelo 2 (com controles)
+
+Como controles, usamos a rede de cada restaurante, uma característica definida antes do aumento do salário. A rede Wendy's é a categoria de referência (incluir as quatro dummies junto com o intercepto geraria colinearidade perfeita).
+
+```{r}
+mod2 <- lm(emptot ~
+             nj +
+             postperiod +
+             nj:postperiod +
+             bk +   # Restaurante da rede Burger King (1) ou não (0)
+             kfc +  # Restaurante da rede KFC (1) ou não (0)
+             roys,  # Restaurante da rede Roy Rogers (1) ou não (0)
+           data = d)
+
+summary(mod2)
+
+coeftest(mod2, vcov = vcovCL(mod2, cluster = ~ ID))
+```
+
+# Responda as seguintes perguntas:
+
+## 1. Qual o tamanho do efeito causal da política de valorização do salário mínimo?
+
+*Insira sua resposta:*
+
+## 2. O efeito é estatisticamente significativo ou não? Como você identifica isso?
+
+*Insira sua resposta:*
+
+## 3. Qual o valor do ajuste do modelo (R²)? A partir desse valor, você acredita que foi capaz de modelar bem a relação entre a política e o emprego?
+
+*Insira sua resposta:*
+
+## 4. Se você tivesse que fazer uma recomendação formal a um governo que lhe contratou para uma consultoria sobre o assunto, o que você recomendaria? O que os seus dados sugerem?
+
+*Insira sua resposta:*

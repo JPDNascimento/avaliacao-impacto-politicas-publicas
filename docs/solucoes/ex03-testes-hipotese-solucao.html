@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="João Paulo Dellasta">
+
+<title>Exercício 3 — Regressão e testes de hipótese (solução) – Avaliação de Impacto de Políticas Públicas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-4d3f3448f837ff03356db176d8adb603.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Avaliação de Impacto de Políticas Públicas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Procurar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alternar de navegação" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Início</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-aulas" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Aulas</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-aulas">    
+        <li>
+    <a class="dropdown-item" href="../aulas/01-introducao-r/aula01-introducao-r.html">
+ <span class="dropdown-text">Aula 1 — Operações básicas em R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/02-regressao-simples/aula02-regressao-simples.html">
+ <span class="dropdown-text">Aula 2 — Regressão linear simples</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/03-regressao-mqo/aula03-regressao-mqo.html">
+ <span class="dropdown-text">Aula 3 — Regressão por MQO e seus pressupostos</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/03-regressao-mqo/resumo-regressao.html">
+ <span class="dropdown-text">Resumo — Regressão linear por Mínimos Quadrados Ordinários</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/04-experimentos/aula04-experimento-raca-curriculo.html">
+ <span class="dropdown-text">Aula 4 — Experimentos: raça importa para conseguir uma entrevista de emprego?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/05-propensity-score/aula05-propensity-score.html">
+ <span class="dropdown-text">Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/06-diff-in-diff/aula06-diff-in-diff.html">
+ <span class="dropdown-text">Aula 6 — Diferenças em Diferenças</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/07-rdd/aula07-rdd.html">
+ <span class="dropdown-text">Aula 7 — Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/08-painel/aula08-painel.html">
+ <span class="dropdown-text">Aula 8 — Dados em painel: primeiras diferenças, efeitos fixos e aleatórios</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/09-custo-efetividade/aula09-custo-efetividade.html">
+ <span class="dropdown-text">Aula 9 — Custo por beneficiário e custo-efetividade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.html">
+ <span class="dropdown-text">Aula 10 — Resolução de problemas em gestão pública: qual método usar?</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercícios" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Exercícios</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-exercícios">    
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex01-introducao-r.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex02-revisao-regressao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex03-testes-hipotese.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex05-propensity-score.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex06-diff-in-diff.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex07-rdd.html">
+ <span class="dropdown-text">Exercício 7 — Avaliando o HISP com Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex08-revisao-final.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-soluções" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Soluções</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-soluções">    
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex01-introducao-r-solucao.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex02-revisao-regressao-solucao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex03-testes-hipotese-solucao.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex04-experimento-casamento-solucao.html">
+ <span class="dropdown-text">Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex05-propensity-score-solucao.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex06-diff-in-diff-solucao.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex08-revisao-final-solucao.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score (solução)</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sumário</h2>
+   
+  <ul>
+  <li><a href="#resumo-final" id="toc-resumo-final" class="nav-link active" data-scroll-target="#resumo-final"><span class="header-section-number">0.1</span> Resumo Final</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/solucoes/ex03-testes-hipotese-solucao.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exercício 3 — Regressão e testes de hipótese (solução)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>João Paulo Dellasta </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Entrega original: 07/11/2024.</p>
+<hr>
+<p><strong>Questão 1) Persico, Postlewaite e Silverman (2004) analisaram dados da National Longitudinal Survey of Youth (NLSY) da coorte de 1979 para avaliar a relação entre altura e salários de homens brancos. Aqui, exploramos a relação entre altura e salários para a amostra completa, que inclui homens e mulheres de todas as raças. O NLSY é uma amostra nacionalmente representativa de 12.686 jovens homens e mulheres que tinham entre 14 e 22 anos quando foram entrevistados pela primeira vez em 1979. Esses indivíduos foram entrevistados anualmente até 1994 e bianualmente desde então. A Tabela 4.7 descreve as variáveis do arquivo <code>heightwage.dta</code> que utilizaremos nesta questão.</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>heightwage <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="at">file =</span> <span class="st">"../dados/heightwage.dta"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Tabela 4.7: Variáveis usadas na questão (<code>heightwage.dta</code>)</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variável</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>wage96</td>
+<td>Salário por hora (em dólares) em 1996</td>
+</tr>
+<tr class="even">
+<td>height85</td>
+<td>Altura adulta: altura (em polegadas) medida em 1985</td>
+</tr>
+</tbody>
+</table>
+<p><strong>a. Crie um gráfico de dispersão dos salários adultos em relação à altura adulta. O que esse gráfico sugere sobre a relação entre altura e salários?</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(heightwage, <span class="fu">aes</span>(<span class="at">x =</span> height85, <span class="at">y =</span> wage96)) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Relação entre Altura e Salários (1996)"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Altura em polegadas (1985)"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Salário por hora (1996)"</span>) <span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ex03-testes-hipotese-solucao_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Resposta:</strong> a nuvem de pontos é muito dispersa e há alguns salários extremamente altos (valores atípicos). Visualmente, a relação entre altura e salário parece fraca, se é que existe; o gráfico sozinho não permite concluir muito, o que motiva estimar a regressão.</p>
+<hr>
+<p><strong>b. Estime uma regressão OLS em que o salário adulto é a variável dependente e a altura adulta é a variável explicativa para todos os respondentes. Relate a equação da regressão estimada e interprete os resultados, explicando em particular o que o valor-p significa.</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimando a regressão OLS</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>modelo_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage96 <span class="sc">~</span> height85, <span class="at">data =</span> heightwage)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Relatando os resultados da regressão</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_ols)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage96 ~ height85, data = heightwage)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+ -17.26   -7.21   -3.38    1.95 1520.48 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -6.97678    5.55895  -1.255 0.209503    
+height85     0.31475    0.08239   3.820 0.000135 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 27.68 on 6711 degrees of freedom
+  (5973 observations deleted due to missingness)
+Multiple R-squared:  0.00217,   Adjusted R-squared:  0.002021 
+F-statistic: 14.59 on 1 and 6711 DF,  p-value: 0.0001346</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimando a regressão OLS com stargazer</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo_ols,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                              wage96           
+-----------------------------------------------
+height85                     0.315***          
+                              (0.082)          
+                                               
+Constant                      -6.977           
+                              (5.559)          
+                                               
+-----------------------------------------------
+Observations                   6,713           
+R2                             0.002           
+Adjusted R2                    0.002           
+Residual Std. Error     27.678 (df = 6711)     
+F Statistic          14.593*** (df = 1; 6711)  
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p><strong>Resposta:</strong></p>
+<p><em>O valor estimado do intercepto é −6.98, o que significa que, de acordo com esse modelo, para uma pessoa com altura zero (o que não é realista), o salário previsto seria -6.98 dólares por hora. Embora o valor não tenha um significado prático, ele é importante para definir a reta da regressão.</em></p>
+<p><em>O coeficiente estimado para a altura é 0.315. Isso significa que cada polegada a mais de altura está associada, em média, a um salário por hora cerca de 31,5 centavos maior. Como este é um modelo com uma única variável explicativa, não há outras variáveis sendo “mantidas constantes”: o coeficiente resume a associação bruta entre altura e salário. A equação estimada é</em> <span class="math inline">\(\widehat{wage96} = -6{,}98 + 0{,}315 \times height85\)</span>.</p>
+<p><em>O valor-p associado ao coeficiente de height85 é 0.000135: se a verdadeira associação entre altura e salário fosse zero, seria muito improvável (probabilidade de cerca de 0,01%) obter uma estimativa tão distante de zero quanto a observada. Por isso rejeitamos a hipótese nula ao nível de 5%. Isso indica uma associação estatisticamente significativa, não necessariamente um efeito causal: a altura pode estar correlacionada com outros fatores (como sexo, que afeta tanto a altura quanto o salário). O R² (0.00217) é baixo: a altura explica apenas uma pequena fração da variação dos salários.</em></p>
+<hr>
+<p><strong>COMPLEMENTO</strong></p>
+<p><strong>Tabela completa</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 82%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variável</th>
+<th>Tipo</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>male</td>
+<td>Numérico</td>
+<td>Indicador de gênero: <code>1</code> para masculino, <code>0</code> para feminino.</td>
+</tr>
+<tr class="even">
+<td>white</td>
+<td>Numérico</td>
+<td>Indicador de raça: <code>1</code> se a pessoa é branca, <code>0</code> se não é branca.</td>
+</tr>
+<tr class="odd">
+<td>black</td>
+<td>Numérico</td>
+<td>Indicador de raça: <code>1</code> se a pessoa é negra, <code>0</code> se não é negra.</td>
+</tr>
+<tr class="even">
+<td>hispanic</td>
+<td>Numérico</td>
+<td>Indicador de etnia: <code>1</code> se a pessoa é hispânica, <code>0</code> se não é hispânica.</td>
+</tr>
+<tr class="odd">
+<td>mompro2</td>
+<td>Numérico</td>
+<td>Indicador de ocupação da mãe: <code>1</code> se em ocupação profissional/gerencial, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="even">
+<td>poppro2</td>
+<td>Numérico</td>
+<td>Indicador de ocupação do pai: <code>1</code> se em ocupação profissional/gerencial, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="odd">
+<td>siblings</td>
+<td>Contínuo</td>
+<td>Número de irmãos/irmãs.</td>
+</tr>
+<tr class="even">
+<td>norest96</td>
+<td>Numérico</td>
+<td>Indicador de residência no Nordeste em 1996: <code>1</code> se sim, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="odd">
+<td>norcen96</td>
+<td>Numérico</td>
+<td>Indicador de residência no Centro-Norte em 1996: <code>1</code> se sim, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="even">
+<td>south96</td>
+<td>Numérico</td>
+<td>Indicador de residência no Sul em 1996: <code>1</code> se sim, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="odd">
+<td>west96</td>
+<td>Numérico</td>
+<td>Indicador de residência no Oeste em 1996: <code>1</code> se sim, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="even">
+<td>height81</td>
+<td>Contínuo</td>
+<td>Altura na adolescência em polegadas.</td>
+</tr>
+<tr class="odd">
+<td>height85</td>
+<td>Contínuo</td>
+<td>Altura adulta em polegadas.</td>
+</tr>
+<tr class="even">
+<td>esteem80</td>
+<td>Contínuo</td>
+<td>Escala de autoestima registrada em 1980.</td>
+</tr>
+<tr class="odd">
+<td>athlets</td>
+<td>Numérico</td>
+<td>Indicador de participação em esportes no ensino médio: <code>1</code> se sim, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="even">
+<td>wage96</td>
+<td>Contínuo</td>
+<td>Salário por hora em 1996 (em dólares).</td>
+</tr>
+<tr class="odd">
+<td>hgc96</td>
+<td>Contínuo</td>
+<td>Maior grau de escolaridade concluído em 1996.</td>
+</tr>
+<tr class="even">
+<td>daded79</td>
+<td>Contínuo</td>
+<td>Escolaridade do pai em anos.</td>
+</tr>
+<tr class="odd">
+<td>momed79</td>
+<td>Contínuo</td>
+<td>Escolaridade da mãe em anos.</td>
+</tr>
+<tr class="even">
+<td>age</td>
+<td>Contínuo</td>
+<td>Idade do indivíduo em 1996.</td>
+</tr>
+<tr class="odd">
+<td>clubnum</td>
+<td>Contínuo</td>
+<td>Número de participações em clubes no ensino médio.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>Hipóteses do Modelo novo</strong></p>
+<p>O modelo inclui variáveis que, além da altura, podem impactar o salário do indivíduo. As hipóteses são:</p>
+<p><strong>Altura (height85):</strong> Indivíduos mais altos poderiam receber salários mais altos devido a estereótipos sociais e associações inconscientes de altura com competência ou autoridade.</p>
+<p><strong>Gênero (male):</strong> Gênero pode afetar o salário, com homens frequentemente recebendo salários mais altos devido a desigualdades no mercado de trabalho.</p>
+<p><strong>Raça e Etnia (white, black, hispanic):</strong> Disparidades salariais com base na raça e etnia são amplamente documentadas. Atenção: nesta base, todo respondente é classificado em exatamente uma das três categorias (<code>white + black + hispanic = 1</code>). Incluir as três dummies junto com o intercepto gera <strong>colinearidade perfeita</strong> (a “armadilha da variável dummy”); o R descarta automaticamente uma delas (<code>hispanic</code> aparece como <code>NA</code>), que passa a ser a <strong>categoria de referência</strong>.</p>
+<p><strong>Ocupação dos pais (mompro2, poppro2):</strong> Pais com ocupações profissionais podem fornecer mais recursos e redes de apoio, possivelmente refletindo em maiores salários.</p>
+<p><strong>Número de irmãos (siblings):</strong> Famílias com muitos filhos podem ter menos recursos para cada um, o que pode influenciar o nível de escolaridade e salário.</p>
+<p><strong>Escolaridade própria e dos pais (hgc96, daded79, momed79):</strong> Escolaridade é um dos fatores mais diretos na determinação de salários.</p>
+<p><strong>Idade (age):</strong> A experiência e o tempo no mercado de trabalho aumentam com a idade, impactando o salário.</p>
+<p><strong>Participação em atividades extracurriculares (clubnum):</strong> A participação em clubes pode ser um indicativo de habilidades sociais e redes que influenciam o sucesso no trabalho.</p>
+<p><strong>Por que esse Modelo é Melhor?</strong></p>
+<p>Este modelo é mais completo do que o modelo bivariado (usando apenas height85 como preditor), pois controla por fatores que podem estar correlacionados tanto com a altura quanto com o salário. A análise isolada de altura e salário pode levar a conclusões enviesadas por variáveis de confusão, como sexo e origem familiar. Ainda assim, incluir controles não transforma automaticamente o coeficiente em efeito causal: só eliminamos o viés das variáveis incluídas. Além disso, é preciso cuidado com variáveis que podem ser <em>consequência</em> da altura (como a escolaridade, se pessoas mais altas tiverem mais oportunidades na escola): controlar por elas pode “absorver” parte do efeito que queremos medir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirmando que cada respondente está em exatamente uma categoria de raça/etnia</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(heightwage<span class="sc">$</span>white <span class="sc">+</span> heightwage<span class="sc">$</span>black <span class="sc">+</span> heightwage<span class="sc">$</span>hispanic)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1 
+12686 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimando a regressão OLS com múltiplas variáveis</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (hispanic fica de fora: é a categoria de referência)</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>modelo_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage96 <span class="sc">~</span> height85 <span class="sc">+</span> male <span class="sc">+</span> white <span class="sc">+</span> black <span class="sc">+</span> mompro2 <span class="sc">+</span> poppro2 <span class="sc">+</span> siblings <span class="sc">+</span> hgc96 <span class="sc">+</span> daded79 <span class="sc">+</span> momed79 <span class="sc">+</span> age <span class="sc">+</span> clubnum, <span class="at">data =</span> heightwage)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumo do modelo</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo_ols,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                              wage96           
+-----------------------------------------------
+height85                       0.162           
+                              (0.149)          
+                                               
+male                           0.824           
+                              (1.211)          
+                                               
+white                         -0.761           
+                              (1.284)          
+                                               
+black                         -2.719*          
+                              (1.389)          
+                                               
+mompro2                        1.281           
+                              (1.450)          
+                                               
+poppro2                        0.724           
+                              (1.162)          
+                                               
+siblings                      -0.226           
+                              (0.181)          
+                                               
+hgc96                        1.564***          
+                              (0.201)          
+                                               
+daded79                        0.164           
+                              (0.153)          
+                                               
+momed79                       -0.016           
+                              (0.195)          
+                                               
+age                           -0.038           
+                              (0.184)          
+                                               
+clubnum                       -0.376           
+                              (0.430)          
+                                               
+Constant                      -16.094          
+                             (11.441)          
+                                               
+-----------------------------------------------
+Observations                   5,312           
+R2                             0.023           
+Adjusted R2                    0.021           
+Residual Std. Error     29.901 (df = 5299)     
+F Statistic          10.529*** (df = 12; 5299) 
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p><strong>Interpretação</strong></p>
+<p><strong>height85 (Altura):</strong> A altura tem um coeficiente positivo (0,162), mas não é estatisticamente significativa, sugerindo que, <strong>controlando as outras variáveis</strong>, a altura não tem um impacto claro no salário.</p>
+<p><strong>male (Gênero):</strong> O coeficiente para homens é positivo (0,824), mas também não é significativo. Isso indica que, nesse modelo, o efeito do gênero sobre o salário não é evidente.</p>
+<p><strong>black (Raça: Negro):</strong> O coeficiente para negros é -2,719, estatisticamente significativo a 10% (p&lt;0,1). Como <code>hispanic</code> é a categoria de referência, ele indica que, em média, indivíduos negros ganham cerca de US$ 2,72 a menos por hora do que indivíduos hispânicos com as mesmas características nas demais variáveis do modelo. O coeficiente de <code>white</code> compara brancos a hispânicos e não é significativo.</p>
+<p><strong>hgc96 (Escolaridade):</strong> A escolaridade é fortemente significativa (p&lt;0,01) e tem um coeficiente de 1,564, mostrando que um maior nível educacional está associado a um aumento significativo no salário.</p>
+<p><strong>Outras Variáveis (white, mompro2, poppro2, siblings, daded79, momed79, age, clubnum):</strong> Essas variáveis não apresentaram significância estatística, indicando que seus efeitos no salário não são claramente observáveis neste modelo.</p>
+<p><strong>Qualidade do Modelo (R² e F-Estatística):</strong> O valor de 𝑅² é 0,023, sugerindo que o modelo explica apenas uma pequena fração da variabilidade no salário. A estatística F é significativa (p&lt;0,01), mostrando que o modelo geral tem alguma capacidade preditiva, mas o ajuste é baixo.</p>
+<p><strong>Resumo:</strong> A escolaridade (hgc96) é a variável com associação mais forte e significativa com o salário, e a diferença entre negros e hispânicos é marginalmente significativa. Depois dos controles, o coeficiente da altura cai à metade (de 0,315 para 0,162) e deixa de ser significativo, o que sugere que parte da associação bruta entre altura e salário se devia a outras variáveis (como sexo e escolaridade). Note também que o número de observações cai, porque o <code>lm()</code> descarta casos com dados faltantes em qualquer variável do modelo.</p>
+<hr>
+<p><strong>Questão 2) Os eleitores se preocupam com a economia, muitas vezes mais do que com qualquer outro tema. Não é surpresa, então, que os políticos invariavelmente argumentem que seu partido é o melhor para a economia. Quem está certo? Neste exercício, vamos olhar para os dados econômicos e do partido presidencial nos EUA contidos no arquivo <code>PresPartyEconGrowth.dta</code> para testar se há alguma diferença no desempenho econômico entre presidentes republicanos e democratas. Usaremos duas variáveis dependentes diferentes:</strong></p>
+<ul>
+<li><p><code>ChangeGDPpc</code>: <em>mudança no PIB real per capita em cada ano de 1962 a 2013 (em dólares ajustados pela inflação, disponíveis no Banco Mundial)</em>.</p></li>
+<li><p><code>Unemployment</code>: <em>taxa de desemprego em cada ano de 1947 a 2013 (disponível no Bureau of Labor Statistics)</em>.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>PresPartyEconGrowth <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="at">file =</span> <span class="st">"../dados/PresPartyEconGrowth.dta"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(PresPartyEconGrowth)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Year"            "LagDemPresident" "Unemployment"    "ChangeGDPpc"    </code></pre>
+</div>
+</div>
+<p><strong>Nossa variável independente é <code>LagDemPresident</code>. Esta variável é igual a 1 se o presidente do ano anterior era democrata e igual a 0 se o presidente do ano anterior era republicano. A ideia é que as políticas do presidente levam algum tempo para surtir efeito, de modo que o crescimento econômico em um determinado ano depende de quem foi o presidente no ano anterior.</strong></p>
+<hr>
+<p><strong>a. Estime um modelo com a taxa de desemprego como variável dependente e <code>LagDemPresident</code> como variável independente. Interprete os coeficientes.</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar o modelo de regressão</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>modelo <span class="ot">&lt;-</span> <span class="fu">lm</span>(Unemployment <span class="sc">~</span> LagDemPresident, <span class="at">data =</span> PresPartyEconGrowth)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver o resumo do modelo</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                           Unemployment        
+-----------------------------------------------
+LagDemPresident              -0.955**          
+                              (0.388)          
+                                               
+Constant                     6.236***          
+                              (0.264)          
+                                               
+-----------------------------------------------
+Observations                    67             
+R2                             0.085           
+Adjusted R2                    0.071           
+Residual Std. Error       1.583 (df = 65)      
+F Statistic            6.065** (df = 1; 65)    
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p><strong>Resposta:</strong></p>
+<p><em>Esses resultados indicam que, nos anos em que o presidente do ano anterior era democrata, a taxa de desemprego foi, em média, significativamente mais baixa.</em></p>
+<p><em>O intercepto (6.2361) revela a taxa de desemprego média quando o presidente anterior era republicano (LagDemPresident = 0) é de aproximadamente 6,24%. Já o coeficiente de LagDemPresident (-0.9555), nos informa que quando o presidente anterior era democrata (LagDemPresident = 1), a taxa de desemprego tende a ser 0,96 pontos percentuais mais baixa, em média, do que quando o presidente anterior era republicano. Este coeficiente é estatisticamente significativo ao nível de 5% (p=0.0164)</em></p>
+<hr>
+<p><strong>b. Estime um modelo com o PIB per capita como variável dependente e <code>LagDemPresident</code> como variável independente. Interprete os coeficientes. Explique por que o tamanho da amostra difere do primeiro modelo.</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar o modelo de regressão com ChangeGDPpc como variável dependente e LagDemPresident como variável independente</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>model_gdp <span class="ot">&lt;-</span> <span class="fu">lm</span>(ChangeGDPpc <span class="sc">~</span> LagDemPresident, <span class="at">data =</span> PresPartyEconGrowth)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Exibir o resumo dos resultados da regressão</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(model_gdp,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                            ChangeGDPpc        
+-----------------------------------------------
+LagDemPresident               219.991          
+                             (164.000)         
+                                               
+Constant                    481.125***         
+                             (111.416)         
+                                               
+-----------------------------------------------
+Observations                    52             
+R2                             0.035           
+Adjusted R2                    0.015           
+Residual Std. Error      589.558 (df = 50)     
+F Statistic             1.799 (df = 1; 50)     
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p><strong><em>Resposta:</em></strong></p>
+<p><em>O intercepto (cerca de 481) é a variação média anual do PIB real per capita, em dólares, nos anos em que o presidente anterior era republicano. O coeficiente de LagDemPresident (cerca de 220) indica que, quando o presidente anterior era democrata, o PIB per capita cresceu em média cerca de US$ 220 a mais por ano. A diferença, porém, não é estatisticamente significativa (p ≈ 0,19).</em></p>
+<p><em>O tamanho da amostra difere porque as séries têm períodos diferentes: o desemprego está disponível de 1947 a 2013 (67 anos), enquanto a variação do PIB per capita só existe de 1962 a 2013 (52 anos). O <code>lm()</code> exclui automaticamente os anos com dados faltantes na variável dependente.</em></p>
+<hr>
+<p><strong>c.&nbsp;Escolha um nível de significância e uma hipótese alternativa e indique, para cada modelo acima, se você rejeita ou não a hipótese nula.</strong></p>
+<p><strong>Resposta:</strong></p>
+<p><em>Para decidir se rejeitamos ou não a hipótese nula, escolhemos, por exemplo, <strong>um nível de significância de α = 0,05</strong> e analisamos os resultados de cada modelo com base nesse critério. (Em testes de hipótese nunca “aceitamos” a hipótese nula: no máximo, não temos evidência suficiente para rejeitá-la.)</em></p>
+<p><em>Modelo 1: Taxa de desemprego como variável dependente</em></p>
+<ul>
+<li><p><em><strong>Hipótese nula (H₀)</strong>: O coeficiente de <code>LagDemPresident</code> é igual a zero (não há diferença no desemprego entre anos após presidentes democratas e republicanos).</em></p></li>
+<li><p><em><strong>Hipótese alternativa (H₁)</strong>: O coeficiente de <code>LagDemPresident</code> é diferente de zero.</em></p></li>
+</ul>
+<p><em>Resultado:</em></p>
+<ul>
+<li><p><em><strong>p-valor de <code>LagDemPresident</code></strong>: 0,0164</em></p></li>
+<li><p><em>Como o <strong>p-valor (0,0164)</strong> é <strong>menor que o nível de significância de 0,05</strong>, rejeitamos a hipótese nula (H₀). Portanto, há evidência de uma diferença estatisticamente significativa na taxa de desemprego. Isso é uma associação: para falar em efeito causal do partido, precisaríamos descartar outros fatores que mudam junto com o partido no poder (ciclos econômicos, choques externos etc.).</em></p></li>
+</ul>
+<p><em>Modelo 2: PIB per capita como variável dependente</em></p>
+<ul>
+<li><p><em><strong>Hipótese nula (H₀)</strong>: O coeficiente de <code>LagDemPresident</code> é igual a zero (não há diferença no crescimento do PIB per capita).</em></p></li>
+<li><p><em><strong>Hipótese alternativa (H₁)</strong>: O coeficiente de <code>LagDemPresident</code> é diferente de zero.</em></p></li>
+</ul>
+<p><em>Resultado:</em></p>
+<ul>
+<li><p><em><strong>p-valor de <code>LagDemPresident</code></strong>: 0,186</em></p></li>
+<li><p><em>Como o <strong>p-valor (0,186)</strong> é <strong>maior que o nível de significância de 0,05</strong>, não rejeitamos a hipótese nula (H₀). Portanto, não há evidência suficiente para concluir que o crescimento do PIB per capita difere entre os dois partidos.</em></p></li>
+</ul>
+<p><em>Resumo:</em></p>
+<ul>
+<li><p><em><strong>Modelo 1 (Desemprego)</strong>: Rejeitamos a hipótese nula.</em></p></li>
+<li><p><em><strong>Modelo 2 (PIB per capita)</strong>: Não rejeitamos a hipótese nula.</em></p></li>
+</ul>
+<hr>
+<p><strong>d.&nbsp;Explique com suas próprias palavras o que o valor-p significa para a variável <code>LagDemPresident</code> em cada modelo.</strong></p>
+<p><em>O <strong>valor-p</strong> indica a probabilidade de observarmos um coeficiente tão distante de zero quanto o estimado (ou mais), <strong>supondo que a hipótese nula seja verdadeira</strong>. Ele não é a probabilidade de a hipótese nula ser verdadeira.</em></p>
+<ul>
+<li><p><em><strong>Modelo 1 (Desemprego)</strong>: O valor-p de 0,0164 significa que, se não houvesse diferença no desemprego entre os partidos, a chance de observarmos uma diferença tão grande quanto a estimada (ou maior) seria de 1,64%. Como esse valor é menor que 0,05, rejeitamos a hipótese nula.</em></p></li>
+<li><p><em><strong>Modelo 2 (PIB per capita)</strong>: O valor-p de 0,186 indica que, se não houvesse diferença no crescimento do PIB per capita entre os partidos, a chance de observarmos uma diferença tão grande quanto a estimada (ou maior) seria de 18,6%. Como esse valor é maior que 0,05, não rejeitamos a hipótese nula.</em></p></li>
+</ul>
+<hr>
+<p><em>COMPLEMENTO</em></p>
+<p><em>Tabela completa</em></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 7%">
+<col style="width: 80%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variável</th>
+<th>Tipo</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Year</td>
+<td>Contínuo</td>
+<td>Ano da observação, variando de 1947 em diante.</td>
+</tr>
+<tr class="even">
+<td>LagDemPresident</td>
+<td>Numérico</td>
+<td>Indicador de presidente democrata anterior: <code>1</code> se o presidente anterior era democrata, <code>0</code> caso contrário.</td>
+</tr>
+<tr class="odd">
+<td>Unemployment</td>
+<td>Contínuo</td>
+<td>Taxa de desemprego anual nos EUA, em porcentagem.</td>
+</tr>
+<tr class="even">
+<td>ChangeGDPpc</td>
+<td>Contínuo</td>
+<td>Variação anual do PIB real per capita, em dólares (ajustados pela inflação).</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modelo com o crescimento do PIB per capita como controle adicional</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>modelo_ajustado <span class="ot">&lt;-</span> <span class="fu">lm</span>(Unemployment <span class="sc">~</span> LagDemPresident <span class="sc">+</span> ChangeGDPpc, <span class="at">data =</span> PresPartyEconGrowth)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Resumo do modelo ajustado</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo_ajustado,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">type=</span><span class="st">"text"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                           Unemployment        
+-----------------------------------------------
+LagDemPresident               -0.667           
+                              (0.432)          
+                                               
+ChangeGDPpc                  -0.001**          
+                             (0.0004)          
+                                               
+Constant                     6.866***          
+                              (0.338)          
+                                               
+-----------------------------------------------
+Observations                    52             
+R2                             0.147           
+Adjusted R2                    0.113           
+Residual Std. Error       1.526 (df = 49)      
+F Statistic            4.235** (df = 2; 49)    
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<section id="resumo-final" class="level3" data-number="0.1">
+<h3 data-number="0.1" class="anchored" data-anchor-id="resumo-final"><span class="header-section-number">0.1</span> Resumo Final</h3>
+<p>Neste modelo, o crescimento do PIB per capita tem associação negativa e significativa com o desemprego, enquanto o coeficiente do partido do presidente anterior diminui e deixa de ser significativo (p ≈ 0,13). Atenção à interpretação: se o partido do presidente afeta o desemprego <em>por meio</em> do crescimento econômico, o PIB é um <strong>mediador</strong>, e controlar por ele elimina justamente parte do efeito do partido que queríamos medir. Além disso, este modelo usa apenas os 52 anos com dados de PIB, então não é diretamente comparável ao modelo do item (a).</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/solucoes/ex03-testes-hipotese-solucao.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></div></div></footer></body></html>

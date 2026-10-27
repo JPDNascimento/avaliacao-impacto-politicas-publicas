@@ -1,0 +1,43 @@
+---
+title: "Resumo — Regressão linear por Mínimos Quadrados Ordinários"
+author: "João Paulo Dellasta"
+---
+
+## Conceitos
+
+| Conceito | Explicação |
+|----|--------|
+| **Correlação** | Mede a força e a direção da associação *linear* entre duas variáveis (de −1 a 1). Não faz parte do modelo de regressão, mas é um passo exploratório útil. |
+| **Regressão** | Modelo que descreve como a média de uma variável dependente (Y) varia com uma ou mais variáveis independentes (X). Os parâmetros são escolhidos de forma a minimizar a soma dos quadrados dos resíduos. |
+| **Correlação × regressão** | A correlação é simétrica e só mede associação; a regressão distingue Y de X e produz uma equação que permite prever Y a partir de X. Nenhuma das duas, sozinha, prova causalidade. |
+| **Y** | Variável dependente ou resultado (o que queremos explicar). |
+| **X** | Variável independente ou explicativa. |
+| **Intercepto ($\beta_0$, ou alfa)** | Valor previsto de Y quando X = 0: o ponto em que a reta corta o eixo vertical. Se o omitirmos, forçamos a reta a passar pela origem (0, 0). |
+| **Inclinação ($\beta_1$, ou beta)** | Variação média prevista em Y quando X aumenta uma unidade. Só pode ser lida como *efeito causal* se X for exógeno (por exemplo, atribuído aleatoriamente). |
+| **Erro ($\varepsilon$)** | Tudo o que afeta Y e não está no modelo. É uma quantidade **não observada**, ligada aos parâmetros populacionais. |
+| **Resíduo ($\hat{\varepsilon}$)** | Estimativa do erro: a diferença entre o valor observado e o valor previsto, $\hat{\varepsilon}_i = Y_i - \hat{Y}_i$. No gráfico, é a distância vertical entre o ponto e a reta. |
+| **Valor previsto ($\hat{Y}$)** | $\hat{Y} = \hat\beta_0 + \hat\beta_1 X$: a média de Y prevista pelo modelo para um dado valor de X (o ponto correspondente sobre a reta). |
+| **MQO** | Estimador que escolhe $\hat\beta_0$ e $\hat\beta_1$ minimizando $\sum_i \hat{\varepsilon}_i^2$, a soma dos quadrados dos resíduos. |
+| **$R^2$** | Proporção da variância de Y explicada pelo modelo (de 0 a 1). Um $R^2$ alto não garante que o modelo esteja bem especificado nem que o efeito seja causal; um $R^2$ baixo não impede que um coeficiente seja bem estimado. |
+
+### Exemplo
+
+Suponha que estimamos Renda (Y) em função de Escolaridade em anos (X) e obtemos $\hat\beta_0 = 350$ e $\hat\beta_1 = 1000$.
+
+- O intercepto indica que a renda média prevista para quem tem 0 anos de escolaridade é R$ 350.
+- A inclinação indica que cada ano a mais de escolaridade está associado, em média, a R$ 1.000 a mais de renda.
+- Para quem tem 10 anos de estudo: $\hat{Y} = 350 + 1000 \times 10 = 10.350$. Em média, a renda prevista é de R$ 10.350 (o erro não entra no valor previsto, porque sua média é zero).
+
+## Pressupostos do modelo linear (resumo)
+
+Adaptado de Figueiredo Filho, D. et al. (2011), *O que fazer e o que não fazer com a regressão: pressupostos e aplicações do modelo linear de Mínimos Quadrados Ordinários (MQO)*, e de Wooldridge, *Introdução à Econometria*.
+
+1. **Linearidade nos parâmetros**: a relação entre X e Y pode ser escrita como uma combinação linear dos parâmetros (podemos incluir $X^2$, logaritmos etc.).
+2. **Amostragem aleatória / observações independentes**.
+3. **Ausência de colinearidade perfeita** entre as variáveis independentes. Correlação alta (mas não perfeita) não gera viés, apenas aumenta os erros-padrão.
+4. **Média condicional do erro igual a zero** ($E[\varepsilon \mid X] = 0$): nenhum fator omitido no erro é correlacionado com X. É o pressuposto central para a **ausência de viés**; sua violação (endogeneidade, variável omitida) é o problema que os desenhos de avaliação de impacto tentam resolver.
+5. **Homocedasticidade**: a variância do erro é constante para todos os valores de X. Sua violação **não** gera viés, mas invalida os erros-padrão convencionais; a solução usual são erros-padrão robustos (ou clusterizados).
+6. **Ausência de autocorrelação** dos erros (relevante em séries temporais e painéis).
+7. **Normalidade do erro**: **não** é necessária para que o MQO seja não viesado nem para o teorema de Gauss-Markov (MQO como melhor estimador linear não viesado, sob os pressupostos 1 a 6). A normalidade garante a validade exata dos testes *t* e *F* em amostras pequenas; em amostras grandes, a inferência vale aproximadamente pelo teorema central do limite.
+
+Outros cuidados práticos: medir bem as variáveis (erro de medida em X gera viés de atenuação), não omitir variáveis relevantes que sejam correlacionadas com X, evitar controlar por variáveis que são consequência do tratamento e ter mais observações do que parâmetros.

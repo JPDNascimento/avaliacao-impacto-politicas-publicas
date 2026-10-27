@@ -1,0 +1,24 @@
+# R / RStudio
+.Rhistory
+.RData
+.Rproj.user/
+.Ruserdata
+
+# Quarto (a pasta docs/ e a pasta _freeze/ DEVEM ser versionadas)
+/.quarto/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos compactados e documentos editáveis de trabalho
+*.rar
+*.zip
+*.pptx
+*.docx
+
+# Nunca versionar dados pessoais de alunos
+*notas*
+*Notas*
+
+**/*.quarto_ipynb

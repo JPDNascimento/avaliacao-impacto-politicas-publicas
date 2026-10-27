@@ -1,0 +1,14 @@
+---
+title: "Exercício 2 — Questões de revisão: regressão linear (solução)"
+author: "João Paulo Dellasta"
+---
+
+**1.** A análise de regressão modela como a média de uma variável dependente (Y) varia em função de uma ou mais variáveis independentes (X). Ela serve para descrever associações, fazer previsões e, quando o desenho de pesquisa garante que X é exógeno (por exemplo, por randomização), estimar efeitos causais. Os coeficientes estimados por MQO resumem a variação média de Y associada a uma unidade a mais de X, mantidas constantes as demais variáveis do modelo.
+
+**2.** O $R^2$ mede a proporção da variância de Y explicada pelo modelo e é útil para avaliar o poder preditivo e comparar especificações com a mesma variável dependente. Suas limitações: sempre aumenta quando adicionamos variáveis (por isso existe o $R^2$ ajustado), não indica se o modelo está bem especificado, não diz nada sobre causalidade e não deve ser usado para julgar se um coeficiente é importante: um efeito causal pode ser bem estimado mesmo com $R^2$ baixo.
+
+**3.** Alternativa **a**. A (b) está errada porque colinearidade perfeita impede a estimação; a (c) está errada porque homocedasticidade se refere à variância constante do erro, não à sua distribuição.
+
+**4.** Alternativa **b**.
+
+**5.** Alternativa **c**. O $R^2$ varia entre 0 e 1 (d), não mede "impacto" (b) e não tem direção de Y para X (a).

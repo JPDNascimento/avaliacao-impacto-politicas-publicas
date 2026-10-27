@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nome do(a) aluno(a)">
+
+<title>Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994) – Avaliação de Impacto de Políticas Públicas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-4d3f3448f837ff03356db176d8adb603.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Avaliação de Impacto de Políticas Públicas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Procurar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alternar de navegação" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Início</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-aulas" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Aulas</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-aulas">    
+        <li>
+    <a class="dropdown-item" href="../aulas/01-introducao-r/aula01-introducao-r.html">
+ <span class="dropdown-text">Aula 1 — Operações básicas em R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/02-regressao-simples/aula02-regressao-simples.html">
+ <span class="dropdown-text">Aula 2 — Regressão linear simples</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/03-regressao-mqo/aula03-regressao-mqo.html">
+ <span class="dropdown-text">Aula 3 — Regressão por MQO e seus pressupostos</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/03-regressao-mqo/resumo-regressao.html">
+ <span class="dropdown-text">Resumo — Regressão linear por Mínimos Quadrados Ordinários</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/04-experimentos/aula04-experimento-raca-curriculo.html">
+ <span class="dropdown-text">Aula 4 — Experimentos: raça importa para conseguir uma entrevista de emprego?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/05-propensity-score/aula05-propensity-score.html">
+ <span class="dropdown-text">Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/06-diff-in-diff/aula06-diff-in-diff.html">
+ <span class="dropdown-text">Aula 6 — Diferenças em Diferenças</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/07-rdd/aula07-rdd.html">
+ <span class="dropdown-text">Aula 7 — Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/08-painel/aula08-painel.html">
+ <span class="dropdown-text">Aula 8 — Dados em painel: primeiras diferenças, efeitos fixos e aleatórios</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/09-custo-efetividade/aula09-custo-efetividade.html">
+ <span class="dropdown-text">Aula 9 — Custo por beneficiário e custo-efetividade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.html">
+ <span class="dropdown-text">Aula 10 — Resolução de problemas em gestão pública: qual método usar?</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercícios" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Exercícios</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-exercícios">    
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex01-introducao-r.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex02-revisao-regressao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex03-testes-hipotese.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex05-propensity-score.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex06-diff-in-diff.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex07-rdd.html">
+ <span class="dropdown-text">Exercício 7 — Avaliando o HISP com Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex08-revisao-final.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-soluções" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Soluções</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-soluções">    
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex01-introducao-r-solucao.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex02-revisao-regressao-solucao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex03-testes-hipotese-solucao.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex04-experimento-casamento-solucao.html">
+ <span class="dropdown-text">Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex05-propensity-score-solucao.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex06-diff-in-diff-solucao.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex08-revisao-final-solucao.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score (solução)</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sumário</h2>
+   
+  <ul>
+  <li><a href="#instruções" id="toc-instruções" class="nav-link active" data-scroll-target="#instruções"><span class="header-section-number">1</span> Instruções</a></li>
+  <li><a href="#exercício---diferenças-em-diferenças" id="toc-exercício---diferenças-em-diferenças" class="nav-link" data-scroll-target="#exercício---diferenças-em-diferenças"><span class="header-section-number">2</span> Exercício - Diferenças em Diferenças</a>
+  <ul class="collapse">
+  <li><a href="#faça-uma-regressão-linear-para-estimar-o-efeito-causal-do-aumento-do-salário-mínimo-usando-o-desenho-de-diferenças-em-diferenças-visto-em-aula." id="toc-faça-uma-regressão-linear-para-estimar-o-efeito-causal-do-aumento-do-salário-mínimo-usando-o-desenho-de-diferenças-em-diferenças-visto-em-aula." class="nav-link" data-scroll-target="#faça-uma-regressão-linear-para-estimar-o-efeito-causal-do-aumento-do-salário-mínimo-usando-o-desenho-de-diferenças-em-diferenças-visto-em-aula."><span class="header-section-number">2.1</span> Faça uma regressão linear para estimar o efeito causal do aumento do salário mínimo usando o desenho de diferenças em diferenças visto em aula.</a></li>
+  </ul></li>
+  <li><a href="#importando-o-banco" id="toc-importando-o-banco" class="nav-link" data-scroll-target="#importando-o-banco"><span class="header-section-number">3</span> Importando o banco</a></li>
+  <li><a href="#rodando-o-modelo-1-sem-controles" id="toc-rodando-o-modelo-1-sem-controles" class="nav-link" data-scroll-target="#rodando-o-modelo-1-sem-controles"><span class="header-section-number">4</span> Rodando o modelo 1 (sem controles)</a></li>
+  <li><a href="#rodando-o-modelo-2-com-controles" id="toc-rodando-o-modelo-2-com-controles" class="nav-link" data-scroll-target="#rodando-o-modelo-2-com-controles"><span class="header-section-number">5</span> Rodando o modelo 2 (com controles)</a></li>
+  <li><a href="#responda-as-seguintes-perguntas" id="toc-responda-as-seguintes-perguntas" class="nav-link" data-scroll-target="#responda-as-seguintes-perguntas"><span class="header-section-number">6</span> Responda as seguintes perguntas:</a>
+  <ul class="collapse">
+  <li><a href="#qual-o-tamanho-do-efeito-causal-da-política-de-valorização-do-salário-mínimo" id="toc-qual-o-tamanho-do-efeito-causal-da-política-de-valorização-do-salário-mínimo" class="nav-link" data-scroll-target="#qual-o-tamanho-do-efeito-causal-da-política-de-valorização-do-salário-mínimo"><span class="header-section-number">6.1</span> 1. Qual o tamanho do efeito causal da política de valorização do salário mínimo?</a></li>
+  <li><a href="#o-efeito-é-estatisticamente-significativo-ou-não-como-você-identifica-isso" id="toc-o-efeito-é-estatisticamente-significativo-ou-não-como-você-identifica-isso" class="nav-link" data-scroll-target="#o-efeito-é-estatisticamente-significativo-ou-não-como-você-identifica-isso"><span class="header-section-number">6.2</span> 2. O efeito é estatisticamente significativo ou não? Como você identifica isso?</a></li>
+  <li><a href="#qual-o-valor-do-ajuste-do-modelo-r²-a-partir-desse-valor-você-acredita-que-foi-capaz-de-modelar-bem-a-relação-entre-a-política-e-o-emprego" id="toc-qual-o-valor-do-ajuste-do-modelo-r²-a-partir-desse-valor-você-acredita-que-foi-capaz-de-modelar-bem-a-relação-entre-a-política-e-o-emprego" class="nav-link" data-scroll-target="#qual-o-valor-do-ajuste-do-modelo-r²-a-partir-desse-valor-você-acredita-que-foi-capaz-de-modelar-bem-a-relação-entre-a-política-e-o-emprego"><span class="header-section-number">6.3</span> 3. Qual o valor do ajuste do modelo (R²)? A partir desse valor, você acredita que foi capaz de modelar bem a relação entre a política e o emprego?</a></li>
+  <li><a href="#se-você-tivesse-que-fazer-uma-recomendação-formal-a-um-governo-que-lhe-contratou-para-uma-consultoria-sobre-o-assunto-o-que-você-recomendaria-o-que-os-seus-dados-sugerem" id="toc-se-você-tivesse-que-fazer-uma-recomendação-formal-a-um-governo-que-lhe-contratou-para-uma-consultoria-sobre-o-assunto-o-que-você-recomendaria-o-que-os-seus-dados-sugerem" class="nav-link" data-scroll-target="#se-você-tivesse-que-fazer-uma-recomendação-formal-a-um-governo-que-lhe-contratou-para-uma-consultoria-sobre-o-assunto-o-que-você-recomendaria-o-que-os-seus-dados-sugerem"><span class="header-section-number">6.4</span> 4. Se você tivesse que fazer uma recomendação formal a um governo que lhe contratou para uma consultoria sobre o assunto, o que você recomendaria? O que os seus dados sugerem?</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/exercicios/ex06-diff-in-diff.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nome do(a) aluno(a) </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="instruções" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Instruções</h1>
+<p>As respostas devem ser entregues como um relatório automatizado gerado em Quarto (html, pdf ou word). Entrega original: 12/12/2024, às 23h59.</p>
+</section>
+<section id="exercício---diferenças-em-diferenças" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Exercício - Diferenças em Diferenças</h1>
+<p><strong>Aumentar o salário mínimo reduz o emprego?</strong></p>
+<p>Vamos replicar o estudo de Card e Krueger (1994), que analisa o impacto do aumento do salário mínimo em New Jersey (NJ), comparando com o estado vizinho da Pensilvânia, onde não houve aumento. Em 1º de abril de 1992, NJ aumentou o salário mínimo de US$ 4,25 para US$ 5,05 por hora.</p>
+<p>A amostra é de 410 restaurantes de <em>fast food</em> (Burger King, KFC, Roy Rogers e Wendy’s) em NJ e no leste da Pensilvânia, entrevistados em duas rodadas: (1) fevereiro e março de 1992, pouco antes do aumento, e (2) novembro e dezembro de 1992, cerca de oito meses depois.</p>
+<section id="faça-uma-regressão-linear-para-estimar-o-efeito-causal-do-aumento-do-salário-mínimo-usando-o-desenho-de-diferenças-em-diferenças-visto-em-aula." class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="faça-uma-regressão-linear-para-estimar-o-efeito-causal-do-aumento-do-salário-mínimo-usando-o-desenho-de-diferenças-em-diferenças-visto-em-aula."><span class="header-section-number">2.1</span> Faça uma regressão linear para estimar o efeito causal do aumento do salário mínimo usando o desenho de diferenças em diferenças visto em aula.</h2>
+<p>Lembre-se da fórmula:</p>
+<p><span class="math display">\[
+y = \beta_0 + \beta_1 D + \beta_2 T + \beta_3 (D \times T) + \beta_4 X + \varepsilon
+\]</span></p>
+<ul>
+<li><span class="math inline">\(y\)</span> = variável resultado: emprego em tempo integral equivalente (FTE) do restaurante (<code>emptot</code>)</li>
+<li><span class="math inline">\(D\)</span> = tratamento: restaurante em NJ (1) ou na Pensilvânia (0) (<code>nj</code>)</li>
+<li><span class="math inline">\(T\)</span> = tempo: antes (0) ou depois (1) do aumento do salário (<code>postperiod</code>)</li>
+<li><span class="math inline">\(X\)</span> = covariáveis (controles)</li>
+</ul>
+</section>
+</section>
+<section id="importando-o-banco" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Importando o banco</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(c("haven", "lmtest", "sandwich")) # instale os pacotes caso necessário</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)   <span class="co"># coeftest()</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sandwich) <span class="co"># erros-padrão clusterizados</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"../dados/CK1994_longformat.dta"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="rodando-o-modelo-1-sem-controles" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Rodando o modelo 1 (sem controles)</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(emptot <span class="sc">~</span>         <span class="co"># Emprego FTE do restaurante</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>            nj <span class="sc">+</span>           <span class="co"># Restaurante em New Jersey (=1) ou na Pensilvânia (=0)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>            postperiod <span class="sc">+</span>   <span class="co"># Antes do aumento do salário (=0) ou depois do aumento (=1)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>            nj<span class="sc">:</span>postperiod, <span class="co"># Interação: o estimador de diferenças em diferenças</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> d)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = emptot ~ nj + postperiod + nj:postperiod, data = d)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-21.166  -6.439  -1.027   4.473  64.561 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)     23.331      1.072  21.767   &lt;2e-16 ***
+nj              -2.892      1.194  -2.423   0.0156 *  
+postperiod      -2.166      1.516  -1.429   0.1535    
+nj:postperiod    2.754      1.688   1.631   0.1033    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 9.406 on 790 degrees of freedom
+  (26 observations deleted due to missingness)
+Multiple R-squared:  0.007401,  Adjusted R-squared:  0.003632 
+F-statistic: 1.964 on 3 and 790 DF,  p-value: 0.118</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cada restaurante aparece duas vezes (antes e depois), então os erros-padrão</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># devem ser clusterizados por restaurante (variável ID)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(mod, <span class="at">vcov =</span> <span class="fu">vcovCL</span>(mod, <span class="at">cluster =</span> <span class="sc">~</span> ID))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    23.3312     1.3465 17.3268  &lt; 2e-16 ***
+nj             -2.8918     1.4395 -2.0088  0.04490 *  
+postperiod     -2.1656     1.2180 -1.7779  0.07580 .  
+nj:postperiod   2.7536     1.3066  2.1074  0.03539 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="rodando-o-modelo-2-com-controles" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Rodando o modelo 2 (com controles)</h1>
+<p>Como controles, usamos a rede de cada restaurante, uma característica definida antes do aumento do salário. A rede Wendy’s é a categoria de referência (incluir as quatro dummies junto com o intercepto geraria colinearidade perfeita).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(emptot <span class="sc">~</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>             nj <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>             postperiod <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>             nj<span class="sc">:</span>postperiod <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>             bk <span class="sc">+</span>   <span class="co"># Restaurante da rede Burger King (1) ou não (0)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>             kfc <span class="sc">+</span>  <span class="co"># Restaurante da rede KFC (1) ou não (0)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>             roys,  <span class="co"># Restaurante da rede Roy Rogers (1) ou não (0)</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> d)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod2)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = emptot ~ nj + postperiod + nj:postperiod + bk + 
+    kfc + roys, data = d)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-24.030  -5.030  -1.222   3.397  63.841 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    24.6133     1.1939  20.616   &lt;2e-16 ***
+nj             -2.3205     1.0798  -2.149   0.0319 *  
+postperiod     -2.1946     1.3690  -1.603   0.1093    
+bk              1.1176     0.9295   1.202   0.2296    
+kfc            -9.6936     1.0505  -9.227   &lt;2e-16 ***
+roys           -1.1342     1.0105  -1.122   0.2620    
+nj:postperiod   2.8140     1.5248   1.845   0.0653 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 8.493 on 787 degrees of freedom
+  (26 observations deleted due to missingness)
+Multiple R-squared:  0.1937,    Adjusted R-squared:  0.1876 
+F-statistic: 31.51 on 6 and 787 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(mod2, <span class="at">vcov =</span> <span class="fu">vcovCL</span>(mod2, <span class="at">cluster =</span> <span class="sc">~</span> ID))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    24.6133     1.3745 17.9065  &lt; 2e-16 ***
+nj             -2.3205     1.2725 -1.8236  0.06860 .  
+postperiod     -2.1946     1.2240 -1.7929  0.07337 .  
+bk              1.1176     1.1142  1.0031  0.31613    
+kfc            -9.6936     1.0759 -9.0099  &lt; 2e-16 ***
+roys           -1.1342     1.3157 -0.8621  0.38892    
+nj:postperiod   2.8140     1.3123  2.1443  0.03231 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="responda-as-seguintes-perguntas" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Responda as seguintes perguntas:</h1>
+<section id="qual-o-tamanho-do-efeito-causal-da-política-de-valorização-do-salário-mínimo" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="qual-o-tamanho-do-efeito-causal-da-política-de-valorização-do-salário-mínimo"><span class="header-section-number">6.1</span> 1. Qual o tamanho do efeito causal da política de valorização do salário mínimo?</h2>
+<p><em>Insira sua resposta:</em></p>
+</section>
+<section id="o-efeito-é-estatisticamente-significativo-ou-não-como-você-identifica-isso" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="o-efeito-é-estatisticamente-significativo-ou-não-como-você-identifica-isso"><span class="header-section-number">6.2</span> 2. O efeito é estatisticamente significativo ou não? Como você identifica isso?</h2>
+<p><em>Insira sua resposta:</em></p>
+</section>
+<section id="qual-o-valor-do-ajuste-do-modelo-r²-a-partir-desse-valor-você-acredita-que-foi-capaz-de-modelar-bem-a-relação-entre-a-política-e-o-emprego" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="qual-o-valor-do-ajuste-do-modelo-r²-a-partir-desse-valor-você-acredita-que-foi-capaz-de-modelar-bem-a-relação-entre-a-política-e-o-emprego"><span class="header-section-number">6.3</span> 3. Qual o valor do ajuste do modelo (R²)? A partir desse valor, você acredita que foi capaz de modelar bem a relação entre a política e o emprego?</h2>
+<p><em>Insira sua resposta:</em></p>
+</section>
+<section id="se-você-tivesse-que-fazer-uma-recomendação-formal-a-um-governo-que-lhe-contratou-para-uma-consultoria-sobre-o-assunto-o-que-você-recomendaria-o-que-os-seus-dados-sugerem" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="se-você-tivesse-que-fazer-uma-recomendação-formal-a-um-governo-que-lhe-contratou-para-uma-consultoria-sobre-o-assunto-o-que-você-recomendaria-o-que-os-seus-dados-sugerem"><span class="header-section-number">6.4</span> 4. Se você tivesse que fazer uma recomendação formal a um governo que lhe contratou para uma consultoria sobre o assunto, o que você recomendaria? O que os seus dados sugerem?</h2>
+<p><em>Insira sua resposta:</em></p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/exercicios/ex06-diff-in-diff.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></div></div></footer></body></html>

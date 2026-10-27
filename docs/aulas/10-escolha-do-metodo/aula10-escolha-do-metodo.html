@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="João Paulo Dellasta">
+
+<title>Aula 10 — Resolução de problemas em gestão pública: qual método usar? – Avaliação de Impacto de Políticas Públicas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4d3f3448f837ff03356db176d8adb603.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Avaliação de Impacto de Políticas Públicas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Procurar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alternar de navegação" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Início</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-aulas" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Aulas</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-aulas">    
+        <li>
+    <a class="dropdown-item" href="../../aulas/01-introducao-r/aula01-introducao-r.html">
+ <span class="dropdown-text">Aula 1 — Operações básicas em R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/02-regressao-simples/aula02-regressao-simples.html">
+ <span class="dropdown-text">Aula 2 — Regressão linear simples</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/03-regressao-mqo/aula03-regressao-mqo.html">
+ <span class="dropdown-text">Aula 3 — Regressão por MQO e seus pressupostos</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/03-regressao-mqo/resumo-regressao.html">
+ <span class="dropdown-text">Resumo — Regressão linear por Mínimos Quadrados Ordinários</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/04-experimentos/aula04-experimento-raca-curriculo.html">
+ <span class="dropdown-text">Aula 4 — Experimentos: raça importa para conseguir uma entrevista de emprego?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/05-propensity-score/aula05-propensity-score.html">
+ <span class="dropdown-text">Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/06-diff-in-diff/aula06-diff-in-diff.html">
+ <span class="dropdown-text">Aula 6 — Diferenças em Diferenças</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/07-rdd/aula07-rdd.html">
+ <span class="dropdown-text">Aula 7 — Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/08-painel/aula08-painel.html">
+ <span class="dropdown-text">Aula 8 — Dados em painel: primeiras diferenças, efeitos fixos e aleatórios</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/09-custo-efetividade/aula09-custo-efetividade.html">
+ <span class="dropdown-text">Aula 9 — Custo por beneficiário e custo-efetividade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.html">
+ <span class="dropdown-text">Aula 10 — Resolução de problemas em gestão pública: qual método usar?</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercícios" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Exercícios</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-exercícios">    
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex01-introducao-r.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex02-revisao-regressao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex03-testes-hipotese.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex05-propensity-score.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex06-diff-in-diff.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex07-rdd.html">
+ <span class="dropdown-text">Exercício 7 — Avaliando o HISP com Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex08-revisao-final.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-soluções" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Soluções</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-soluções">    
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex01-introducao-r-solucao.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex02-revisao-regressao-solucao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex03-testes-hipotese-solucao.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex04-experimento-casamento-solucao.html">
+ <span class="dropdown-text">Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex05-propensity-score-solucao.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex06-diff-in-diff-solucao.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex08-revisao-final-solucao.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score (solução)</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sumário</h2>
+   
+  <ul>
+  <li><a href="#caso-1" id="toc-caso-1" class="nav-link active" data-scroll-target="#caso-1"><span class="header-section-number">1</span> Caso 1</a></li>
+  <li><a href="#caso-2" id="toc-caso-2" class="nav-link" data-scroll-target="#caso-2"><span class="header-section-number">2</span> Caso 2</a></li>
+  <li><a href="#caso-3" id="toc-caso-3" class="nav-link" data-scroll-target="#caso-3"><span class="header-section-number">3</span> Caso 3</a></li>
+  <li><a href="#caso-4" id="toc-caso-4" class="nav-link" data-scroll-target="#caso-4"><span class="header-section-number">4</span> Caso 4</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Aula 10 — Resolução de problemas em gestão pública: qual método usar?</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>João Paulo Dellasta </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Nesta atividade, cada caso apresenta uma pergunta de pesquisa e os dados disponíveis. A tarefa é identificar o desenho de avaliação mais adequado, formular a hipótese e listar os pressupostos que precisariam ser verificados. Tente responder antes de abrir a resposta.</p>
+<section id="caso-1" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Caso 1</h1>
+<p><strong>Pergunta de pesquisa:</strong> como a implementação de um novo programa de bolsas de estudo afeta o desempenho acadêmico dos estudantes em escolas públicas?</p>
+<p><strong>Banco de dados:</strong></p>
+<ul>
+<li>Notas dos estudantes que receberam e que não receberam as bolsas, antes e depois da implementação do programa.</li>
+<li>Informação sobre a elegibilidade para o programa, definida por um limiar de renda bem definido: se a renda familiar é menor do que meio salário mínimo por pessoa, o estudante é elegível para receber a bolsa.</li>
+<li>Dados demográficos e sociais dos estudantes, como idade, anos estudados em escolas públicas, escolaridade do pai e da mãe e quantidade de mudanças de escola no último ano.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dica</span>Resposta: Regressão com Descontinuidade (RDD)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Hipótese:</strong> o desempenho acadêmico dos estudantes logo <strong>abaixo</strong> do limiar de renda (elegíveis à bolsa) será melhor do que o dos estudantes logo <strong>acima</strong> do limiar (não elegíveis), devido ao acesso a recursos educacionais adicionais.</p>
+<p><strong>Estratégia:</strong> comparar o desempenho dos estudantes imediatamente abaixo e imediatamente acima do limiar de elegibilidade. Perto do corte, os dois grupos devem ser muito parecidos em tudo, exceto no acesso à bolsa. As covariáveis demográficas podem ser incluídas como controles e usadas para testar o balanceamento.</p>
+<p><strong>Por que RDD:</strong> a regra de elegibilidade é um corte claro em uma variável contínua (renda per capita). Se nem todos os elegíveis recebem a bolsa, o desenho é um RDD <em>fuzzy</em>, e o efeito é estimado para quem cumpre a regra no entorno do corte.</p>
+<p><strong>Verificações necessárias:</strong></p>
+<ul>
+<li>Testar se as covariáveis são contínuas (balanceadas) em torno do limiar.</li>
+<li>Verificar se há manipulação da renda declarada para ficar abaixo do corte (teste de densidade de McCrary).</li>
+<li>Testar a sensibilidade a diferentes janelas (<em>bandwidths</em>) e formas funcionais.</li>
+<li>Lembrar que o efeito é <strong>local</strong>: vale para estudantes perto do limiar.</li>
+</ul>
+<p>Como há dados antes e depois do programa, também é possível usar as notas pré-programa como teste de placebo: não deveria haver descontinuidade nas notas antes da bolsa existir.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="caso-2" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Caso 2</h1>
+<p><strong>Pergunta de pesquisa:</strong> qual o impacto da reforma tributária sobre as pequenas empresas em diferentes regiões?</p>
+<p><strong>Banco de dados:</strong></p>
+<ul>
+<li>Receita e lucro das pequenas empresas antes e depois da reforma.</li>
+<li>Dados das regiões onde as empresas estão localizadas.</li>
+<li>Informações sobre políticas fiscais locais.</li>
+<li>Antes da reforma, as regiões apresentavam trajetórias de desempenho econômico semelhantes ao longo do tempo.</li>
+<li>Algumas regiões implementaram a reforma tributária e outras não.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dica</span>Resposta: Diferenças em Diferenças (DiD)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Hipótese:</strong> as pequenas empresas nas regiões que implementaram a reforma terão desempenho econômico melhor do que as empresas em regiões sem a reforma, devido a um ambiente fiscal mais favorável.</p>
+<p><strong>Estratégia:</strong> comparar a <strong>mudança</strong> em receitas e lucros (depois − antes) das empresas em regiões que implementaram a reforma com a mudança nas regiões que não implementaram.</p>
+<p><strong>Por que DiD:</strong> há grupo tratado e grupo de controle, observados antes e depois da intervenção, e a informação de que as trajetórias eram semelhantes antes da reforma sugere que o pressuposto de tendências paralelas é plausível.</p>
+<p><strong>Verificações necessárias:</strong></p>
+<ul>
+<li>Confirmar as tendências paralelas pré-tratamento (gráficos e testes de <em>event study</em>/placebo).</li>
+<li>Garantir que não houve outros choques simultâneos que afetaram só as regiões tratadas.</li>
+<li>Avaliar se a decisão de implementar a reforma esteve relacionada a expectativas sobre o desempenho futuro das empresas (o que violaria o pressuposto).</li>
+<li>Usar erros-padrão clusterizados por região.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="caso-3" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Caso 3</h1>
+<p><strong>Pergunta de pesquisa:</strong> como programas de habitação social afetam a qualidade de vida em diferentes bairros?</p>
+<p><strong>Banco de dados:</strong></p>
+<ul>
+<li>Dados sobre qualidade de vida (saúde, educação, renda) antes e depois da implementação dos programas.</li>
+<li>Informações sobre os bairros (demografia, infraestrutura, economia, mercado de trabalho).</li>
+<li>Detalhes dos programas de habitação social.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dica</span>Resposta: Pareamento (<em>matching</em> / propensity score), idealmente combinado com DiD
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Hipótese:</strong> bairros que implementaram programas de habitação social terão melhoria significativa na qualidade de vida de seus residentes em comparação com bairros semelhantes sem esses programas, devido ao acesso a moradias adequadas.</p>
+<p><strong>Estratégia:</strong> parear cada bairro com programa a bairros sem programa que sejam parecidos nas características observáveis (demografia, infraestrutura, economia, mercado de trabalho) e comparar a evolução da qualidade de vida.</p>
+<p><strong>Pressuposto central (seleção nos observáveis):</strong> depois de condicionar nas características observadas, a escolha dos bairros que receberam o programa não está relacionada a outros fatores que afetam a qualidade de vida. <strong>O pareamento só equilibra os grupos nas variáveis observadas</strong>; diferentemente de um experimento, ele não garante equilíbrio nas variáveis não observadas. Por isso, a credibilidade depende de termos medido todos os fatores relevantes que influenciaram a seleção dos bairros.</p>
+<p>Como há dados antes e depois, uma estratégia mais robusta é combinar pareamento com Diferenças em Diferenças: comparar a <em>mudança</em> na qualidade de vida entre bairros pareados elimina também diferenças não observadas que sejam fixas no tempo.</p>
+<p><strong>Verificações necessárias:</strong></p>
+<ul>
+<li>Testar o balanceamento das covariáveis depois do pareamento.</li>
+<li>Verificar o suporte comum (sobreposição dos escores de propensão).</li>
+<li>Fazer análises de sensibilidade a possíveis confundidores não observados.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="caso-4" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Caso 4</h1>
+<p><strong>Pergunta de pesquisa:</strong> qual o efeito de políticas de transporte público sobre a mobilidade urbana em diferentes cidades?</p>
+<p><strong>Hipótese:</strong> cidades que introduziram políticas de transporte público inovadoras terão uma mobilidade urbana mais eficiente (tempos de viagem menores e maior uso de transporte público) do que cidades que não implementaram essas políticas.</p>
+<p><strong>Banco de dados:</strong></p>
+<ul>
+<li>Dados sobre mobilidade urbana (tempo de viagem, uso de transporte público) ao longo de vários anos.</li>
+<li>Informações sobre as políticas de transporte público.</li>
+<li>Dados socioeconômicos das cidades.</li>
+<li>As cidades introduziram as políticas em momentos diferentes e tinham níveis diferentes de eficiência de mobilidade antes das novas políticas.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dica</span>Resposta: Dados em painel (efeitos fixos)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Estratégia:</strong> estimar um modelo de painel com efeitos fixos de cidade (que absorvem as diferenças permanentes entre cidades, como os níveis distintos de mobilidade antes da política) e efeitos fixos de ano (que absorvem choques comuns a todas as cidades). O efeito é identificado pela variação no tempo dentro de cada cidade, comparando o antes e o depois da adoção.</p>
+<p><strong>Por que painel com efeitos fixos:</strong> as cidades diferem em níveis antes da política, o que torna efeitos aleatórios pouco plausíveis (eles supõem que essas diferenças não estão correlacionadas com a adoção). O teste de Hausman pode ser usado para comparar as duas especificações.</p>
+<p><strong>Verificações necessárias:</strong></p>
+<ul>
+<li>Variação temporal suficiente na adoção das políticas.</li>
+<li>Ausência de tendências específicas das cidades que coincidam com a adoção (testar tendências pré-adoção).</li>
+<li>Como a adoção ocorre em momentos diferentes (<em>adoção escalonada</em>), o estimador de efeitos fixos de duas vias (TWFE) pode ser viesado quando os efeitos variam no tempo; estimadores mais recentes de DiD com adoção escalonada (por exemplo, Callaway e Sant’Anna, 2021) são uma alternativa recomendada.</li>
+<li>Erros-padrão clusterizados por cidade.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></div></div></footer></body></html>

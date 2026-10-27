@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="João Paulo Dellasta">
+
+<title>Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento – Avaliação de Impacto de Políticas Públicas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4d3f3448f837ff03356db176d8adb603.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Avaliação de Impacto de Políticas Públicas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Procurar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alternar de navegação" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Início</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-aulas" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Aulas</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-aulas">    
+        <li>
+    <a class="dropdown-item" href="../../aulas/01-introducao-r/aula01-introducao-r.html">
+ <span class="dropdown-text">Aula 1 — Operações básicas em R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/02-regressao-simples/aula02-regressao-simples.html">
+ <span class="dropdown-text">Aula 2 — Regressão linear simples</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/03-regressao-mqo/aula03-regressao-mqo.html">
+ <span class="dropdown-text">Aula 3 — Regressão por MQO e seus pressupostos</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/03-regressao-mqo/resumo-regressao.html">
+ <span class="dropdown-text">Resumo — Regressão linear por Mínimos Quadrados Ordinários</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/04-experimentos/aula04-experimento-raca-curriculo.html">
+ <span class="dropdown-text">Aula 4 — Experimentos: raça importa para conseguir uma entrevista de emprego?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/05-propensity-score/aula05-propensity-score.html">
+ <span class="dropdown-text">Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/06-diff-in-diff/aula06-diff-in-diff.html">
+ <span class="dropdown-text">Aula 6 — Diferenças em Diferenças</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/07-rdd/aula07-rdd.html">
+ <span class="dropdown-text">Aula 7 — Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/08-painel/aula08-painel.html">
+ <span class="dropdown-text">Aula 8 — Dados em painel: primeiras diferenças, efeitos fixos e aleatórios</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/09-custo-efetividade/aula09-custo-efetividade.html">
+ <span class="dropdown-text">Aula 9 — Custo por beneficiário e custo-efetividade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.html">
+ <span class="dropdown-text">Aula 10 — Resolução de problemas em gestão pública: qual método usar?</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercícios" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Exercícios</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-exercícios">    
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex01-introducao-r.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex02-revisao-regressao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex03-testes-hipotese.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex05-propensity-score.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex06-diff-in-diff.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex07-rdd.html">
+ <span class="dropdown-text">Exercício 7 — Avaliando o HISP com Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../exercicios/ex08-revisao-final.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-soluções" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Soluções</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-soluções">    
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex01-introducao-r-solucao.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex02-revisao-regressao-solucao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex03-testes-hipotese-solucao.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex04-experimento-casamento-solucao.html">
+ <span class="dropdown-text">Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex05-propensity-score-solucao.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex06-diff-in-diff-solucao.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../solucoes/ex08-revisao-final-solucao.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score (solução)</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sumário</h2>
+   
+  <ul>
+  <li><a href="#o-banco-de-dados" id="toc-o-banco-de-dados" class="nav-link active" data-scroll-target="#o-banco-de-dados"><span class="header-section-number">1</span> O banco de dados:</a>
+  <ul class="collapse">
+  <li><a href="#testes-t-independentes-para-comparar-as-médias-de-diferentes-variáveis-entre-dois-grupos" id="toc-testes-t-independentes-para-comparar-as-médias-de-diferentes-variáveis-entre-dois-grupos" class="nav-link" data-scroll-target="#testes-t-independentes-para-comparar-as-médias-de-diferentes-variáveis-entre-dois-grupos"><span class="header-section-number">1.1</span> Testes t independentes para comparar as médias de diferentes variáveis entre dois grupos</a></li>
+  <li><a href="#explicação-do-teste-t-de-duas-amostras-de-welch" id="toc-explicação-do-teste-t-de-duas-amostras-de-welch" class="nav-link" data-scroll-target="#explicação-do-teste-t-de-duas-amostras-de-welch"><span class="header-section-number">1.2</span> Explicação do Teste t de Duas Amostras de Welch</a></li>
+  <li><a href="#hipóteses-do-teste" id="toc-hipóteses-do-teste" class="nav-link" data-scroll-target="#hipóteses-do-teste"><span class="header-section-number">1.3</span> Hipóteses do teste</a></li>
+  <li><a href="#os-principais-resultados-do-teste-para-a-diferença-de-saúde-entre-os-dois-grupos" id="toc-os-principais-resultados-do-teste-para-a-diferença-de-saúde-entre-os-dois-grupos" class="nav-link" data-scroll-target="#os-principais-resultados-do-teste-para-a-diferença-de-saúde-entre-os-dois-grupos"><span class="header-section-number">1.4</span> Os principais resultados do teste para a diferença de saúde entre os dois grupos:</a></li>
+  <li><a href="#porém-o-que-mais-pode-variar-entre-esses-dois-grupos" id="toc-porém-o-que-mais-pode-variar-entre-esses-dois-grupos" class="nav-link" data-scroll-target="#porém-o-que-mais-pode-variar-entre-esses-dois-grupos"><span class="header-section-number">1.5</span> Porém, o que mais pode variar entre esses dois grupos?</a></li>
+  <li><a href="#exemplo-da-relação-do-teste-t-com-regressão-linear-bivariada" id="toc-exemplo-da-relação-do-teste-t-com-regressão-linear-bivariada" class="nav-link" data-scroll-target="#exemplo-da-relação-do-teste-t-com-regressão-linear-bivariada"><span class="header-section-number">1.6</span> Exemplo da relação do teste t com regressão linear bivariada</a></li>
+  </ul></li>
+  <li><a href="#modelo-causal" id="toc-modelo-causal" class="nav-link" data-scroll-target="#modelo-causal"><span class="header-section-number">2</span> Modelo Causal</a>
+  <ul class="collapse">
+  <li><a href="#objetivo" id="toc-objetivo" class="nav-link" data-scroll-target="#objetivo"><span class="header-section-number">2.1</span> Objetivo</a></li>
+  <li><a href="#resultado" id="toc-resultado" class="nav-link" data-scroll-target="#resultado"><span class="header-section-number">2.2</span> Resultado</a></li>
+  <li><a href="#estimativa-ingênua-correlação-não-implica-causalidade" id="toc-estimativa-ingênua-correlação-não-implica-causalidade" class="nav-link" data-scroll-target="#estimativa-ingênua-correlação-não-implica-causalidade"><span class="header-section-number">2.3</span> Estimativa ingênua: correlação não implica causalidade</a></li>
+  <li><a href="#propensity-score" id="toc-propensity-score" class="nav-link" data-scroll-target="#propensity-score"><span class="header-section-number">2.4</span> Propensity Score</a>
+  <ul class="collapse">
+  <li><a href="#vamos-extrair-os-escores-do-modelo" id="toc-vamos-extrair-os-escores-do-modelo" class="nav-link" data-scroll-target="#vamos-extrair-os-escores-do-modelo"><span class="header-section-number">2.4.1</span> Vamos extrair os escores do modelo</a></li>
+  <li><a href="#significado-dos-valores-minimos-e-máximos" id="toc-significado-dos-valores-minimos-e-máximos" class="nav-link" data-scroll-target="#significado-dos-valores-minimos-e-máximos"><span class="header-section-number">2.4.2</span> <strong>Significado dos Valores minimos e máximos</strong></a></li>
+  <li><a href="#agora-vamos-plotar-as-densidades-dos-dois-grupos-inscritos-e-não-inscritos" id="toc-agora-vamos-plotar-as-densidades-dos-dois-grupos-inscritos-e-não-inscritos" class="nav-link" data-scroll-target="#agora-vamos-plotar-as-densidades-dos-dois-grupos-inscritos-e-não-inscritos"><span class="header-section-number">2.4.3</span> Agora vamos plotar as densidades dos dois grupos (inscritos e não inscritos)</a></li>
+  <li><a href="#interpretação-do-gráfico" id="toc-interpretação-do-gráfico" class="nav-link" data-scroll-target="#interpretação-do-gráfico"><span class="header-section-number">2.4.4</span> Interpretação do Gráfico</a></li>
+  <li><a href="#calculando-os-efeitos" id="toc-calculando-os-efeitos" class="nav-link" data-scroll-target="#calculando-os-efeitos"><span class="header-section-number">2.4.5</span> Calculando os efeitos</a></li>
+  <li><a href="#conclusão" id="toc-conclusão" class="nav-link" data-scroll-target="#conclusão"><span class="header-section-number">2.4.6</span> Conclusão:</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/aulas/05-propensity-score/aula05-propensity-score.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>João Paulo Dellasta </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Nota
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Este exemplo é uma tradução e adaptação do material de Andrew Heiss (<em>Program Evaluation for Public Service</em>, exemplo “Matching and inverse probability weighting”), que também criou os dados simulados <code>mosquito_nets.csv</code>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>nets <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">"../../dados/mosquito_nets.csv"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(nets)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "id"           "net"          "net_num"      "malaria_risk" "income"      
+ [6] "health"       "household"    "eligible"     "temperature"  "resistance"  </code></pre>
+</div>
+</div>
+<section id="o-banco-de-dados" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> O banco de dados:</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 76%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Nome</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>malaria_risk</code></td>
+<td>Probabilidade de alguém na casa ser infectado com malária. Medido em uma escala de 0-100, com valores mais altos indicando maior risco.</td>
+</tr>
+<tr class="even">
+<td><code>net</code> e <code>net_num</code></td>
+<td>Variável binária indicando se a casa usou redes mosquiteiras.</td>
+</tr>
+<tr class="odd">
+<td><code>eligible</code></td>
+<td>Variável binária indicando se a casa é elegível para o programa de rede gratuita.</td>
+</tr>
+<tr class="even">
+<td><code>income</code></td>
+<td>Renda mensal da casa, em dólares americanos.</td>
+</tr>
+<tr class="odd">
+<td><code>temperature</code></td>
+<td>Temperatura média à noite, em Celsius.</td>
+</tr>
+<tr class="even">
+<td><code>health</code></td>
+<td>Saúde auto-relatada na casa. Medido em uma escala de 0-100, com valores mais altos indicando melhor saúde.</td>
+</tr>
+<tr class="odd">
+<td><code>household</code></td>
+<td>Número de pessoas vivendo na casa.</td>
+</tr>
+<tr class="even">
+<td><code>resistance</code></td>
+<td>Algumas cepas de mosquitos são mais resistentes a inseticidas e, portanto, representam um risco maior de infectar pessoas com malária. Medido em uma escala de 0-100, com valores mais altos indicando maior resistência.</td>
+</tr>
+</tbody>
+</table>
+<section id="testes-t-independentes-para-comparar-as-médias-de-diferentes-variáveis-entre-dois-grupos" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="testes-t-independentes-para-comparar-as-médias-de-diferentes-variáveis-entre-dois-grupos"><span class="header-section-number">1.1</span> Testes t independentes para comparar as médias de diferentes variáveis entre dois grupos</h2>
+<p>Estamos testando se há diferença nas características observáveis entre os dois grupos definidos por <code>net</code>, uma variável binária que indica se a casa usou redes mosquiteiras ou não.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Diferença na saúde entre casas com e sem rede</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(nets<span class="sc">$</span>health <span class="sc">~</span> nets<span class="sc">$</span>net_num)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  nets$health by nets$net_num
+t = -7.6447, df = 1346.9, p-value = 3.961e-14
+alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+95 percent confidence interval:
+ -8.610309 -5.093693
+sample estimates:
+mean in group 0 mean in group 1 
+       48.05696        54.90896 </code></pre>
+</div>
+</div>
+</section>
+<section id="explicação-do-teste-t-de-duas-amostras-de-welch" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="explicação-do-teste-t-de-duas-amostras-de-welch"><span class="header-section-number">1.2</span> Explicação do Teste t de Duas Amostras de Welch</h2>
+<p>Este é um teste t para duas amostras independentes que não assume igualdade de variâncias entre os grupos. É adequado quando as variâncias dos dois grupos que você está comparando podem não ser iguais.</p>
+<p>Interpretação para a comparação entre: nets$health e nets$net: Estamos comparando as médias da variável health (saúde) entre os dois grupos definidos pela variável net. Net é uma variável binária, onde 1 identifica que a casa usa redes mosquiteiras e 0 indica que não usa.</p>
+</section>
+<section id="hipóteses-do-teste" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="hipóteses-do-teste"><span class="header-section-number">1.3</span> Hipóteses do teste</h2>
+<p><strong>Hipótese nula:</strong> A verdadeira diferença nas médias entre os grupos é igual a 0.</p>
+<p><strong>Hipótese Alternativa:</strong> A verdadeira diferença nas médias entre os grupos não é igual a 0.</p>
+</section>
+<section id="os-principais-resultados-do-teste-para-a-diferença-de-saúde-entre-os-dois-grupos" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="os-principais-resultados-do-teste-para-a-diferença-de-saúde-entre-os-dois-grupos"><span class="header-section-number">1.4</span> Os principais resultados do teste para a diferença de saúde entre os dois grupos:</h2>
+<p><strong>A diferença de médias é de -6.852:</strong> As casas que não usam redes mosquiteiras (grupo 0) têm uma média de saúde auto-relatada de 48.05696, enquanto as casas que usam redes mosquiteiras (grupo 1) têm uma média de saúde auto-relatada de 54.90896.</p>
+<p>Ou seja: 48.05696 - 54.90896 = -6.852</p>
+<p><strong>Estatísticas:</strong></p>
+<p><strong>t</strong> = -7.6447, <strong>df</strong> = 1346.9, <strong>p-value</strong> = 3.961e-14</p>
+<p>O <strong>valor t</strong> de -7.6447 é o valor estatístico do teste t. Ele é negativo, o que indica que a média do grupo que não usa rede é menor que a média do grupo que usa.</p>
+<p>O <strong>valor p</strong> é extremamente pequeno (3.961e-14), muito menor que o nível de significância comum de 0,05. Isso indica que a diferença nas médias de saúde entre os dois grupos é estatisticamente significativa.</p>
+<p><strong>Intervalo de Confiança de 95%:</strong> -8.610309 a -5.093693</p>
+<p>Estamos 95% confiantes de que a verdadeira diferença nas médias de saúde entre os dois grupos está entre -8.610309 e -5.093693. Como o intervalo não inclui 0 e é totalmente negativo, isso reforça que o grupo sem redes tem uma média significativamente menor do que o grupo com redes mosquiteiras.</p>
+<p><strong>Conclusão:</strong></p>
+<p>Há uma diferença estatisticamente significativa nas médias de saúde auto-relatada entre casas que usam redes mosquiteiras e aquelas que não usam. Especificamente, casas que usam redes mosquiteiras têm uma média de saúde auto-relatada significativamente maior do que aquelas que não usam.</p>
+</section>
+<section id="porém-o-que-mais-pode-variar-entre-esses-dois-grupos" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="porém-o-que-mais-pode-variar-entre-esses-dois-grupos"><span class="header-section-number">1.5</span> Porém, o que mais pode variar entre esses dois grupos?</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Diferença na renda entre casas com e sem rede</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(nets<span class="sc">$</span>income <span class="sc">~</span> nets<span class="sc">$</span>net_num)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  nets$income by nets$net_num
+t = -8.8113, df = 1284.7, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+95 percent confidence interval:
+ -100.79660  -64.08593
+sample estimates:
+mean in group 0 mean in group 1 
+       872.7526        955.1938 </code></pre>
+</div>
+</div>
+<p><strong>Interpretação:</strong> A diferença nas médias de renda entre os dois grupos é estatisticamente significativa, com o grupo que usa redes mosquiteiras tendo uma renda média maior. O intervalo de confiança não inclui zero, reforçando a significância da diferença.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Diferença na temperatura da região em que moram as casas com e sem rede</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(nets<span class="sc">$</span>temperature <span class="sc">~</span> nets<span class="sc">$</span>net_num)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  nets$temperature by nets$net_num
+t = 3.492, df = 1404.3, p-value = 0.0004943
+alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+95 percent confidence interval:
+ 0.3098586 1.1042309
+sample estimates:
+mean in group 0 mean in group 1 
+       24.08796        23.38091 </code></pre>
+</div>
+</div>
+<p><strong>Interpretação:</strong> A diferença na temperatura média dos locais é estatisticamente significativa, mas a diferença em termos absolutos é pequena, indicando que as casas que não usam redes estão em locais ligeiramente mais quentes.</p>
+</section>
+<section id="exemplo-da-relação-do-teste-t-com-regressão-linear-bivariada" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="exemplo-da-relação-do-teste-t-com-regressão-linear-bivariada"><span class="header-section-number">1.6</span> Exemplo da relação do teste t com regressão linear bivariada</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A mesma comparação feita com uma regressão bivariada</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(temperature <span class="sc">~</span> net_num,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   <span class="at">data =</span> nets))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = temperature ~ net_num, data = nets)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-8.488 -3.181  0.012  3.212  8.819 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  24.0880     0.1251 192.552  &lt; 2e-16 ***
+net_num      -0.7070     0.2007  -3.524 0.000436 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4.094 on 1750 degrees of freedom
+Multiple R-squared:  0.007045,  Adjusted R-squared:  0.006478 
+F-statistic: 12.42 on 1 and 1750 DF,  p-value: 0.0004365</code></pre>
+</div>
+</div>
+<p><strong>Objetivo:</strong> Avaliar a relação entre a variável independente net_num (indicando uso de redes mosquiteiras) e a variável dependente temperature (temperatura média).</p>
+<p><strong>Interpretação dos Resultados:</strong> Intercepto: O valor de 24.0880 representa a temperatura média esperada quando net_num é zero, ou seja, para o grupo que não usa redes.</p>
+<p><strong>Coeficiente de net_num</strong>: O valor de -0.7070 indica que, em média, as casas que usam redes mosquiteiras têm uma temperatura 0.707 graus Celsius menor do que aquelas que não usam. Este coeficiente é estatisticamente significativo (p &lt; 0.001), sugerindo uma diferença significativa na temperatura.</p>
+<p><strong>R² e Ajuste:</strong> O R² ajustado é muito baixo (0,0065), indicando que net_num explica apenas uma pequena parte da variação na temperatura. Repare que o coeficiente de net_num é exatamente a diferença de médias do teste t: uma regressão com uma variável binária compara médias.</p>
+</section>
+</section>
+<section id="modelo-causal" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Modelo Causal</h1>
+<section id="objetivo" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="objetivo"><span class="header-section-number">2.1</span> Objetivo</h2>
+<p>Nosso objetivo neste exemplo é estimar o efeito causal do uso de redes mosquiteiras no risco de malária usando apenas dados observacionais.</p>
+<p>Obs.: Isso não foi um estudo randomizado controlado (RCT em inglês), então pode parecer um pouco duvidoso fazer afirmações de causalidade.</p>
+</section>
+<section id="resultado" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="resultado"><span class="header-section-number">2.2</span> Resultado</h2>
+<p>Como esses dados são simulados, sabemos o verdadeiro efeito causal das redes: ele foi definido na simulação.</p>
+<p>O verdadeiro efeito médio do tratamento (ATE, na sigla em inglês) é -10. Usar uma rede mosquiteira faz com que o risco de malária diminua em 10 pontos, em média.</p>
+<p>Vamos ver se conseguimos encontrar esse efeito de 10 pontos!</p>
+</section>
+<section id="estimativa-ingênua-correlação-não-implica-causalidade" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="estimativa-ingênua-correlação-não-implica-causalidade"><span class="header-section-number">2.3</span> Estimativa ingênua: correlação não implica causalidade</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nets <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(net_num) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">number =</span> <span class="fu">n</span>(),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">avg =</span> <span class="fu">mean</span>(malaria_risk))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["net_num"],"name":[1],"type":["int"],"align":["right"]},{"label":["number"],"name":[2],"type":["int"],"align":["right"]},{"label":["avg"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"1071","3":"41.93651"},{"1":"1","2":"681","3":"25.60499"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(nets<span class="sc">$</span>malaria_risk[nets<span class="sc">$</span>net<span class="sc">==</span><span class="cn">TRUE</span>]) <span class="sc">-</span> <span class="fu">mean</span>(nets<span class="sc">$</span>malaria_risk[nets<span class="sc">$</span>net<span class="sc">==</span><span class="cn">FALSE</span>])</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -16.33152</code></pre>
+</div>
+</div>
+<p><strong>Efeito da diferença de médias</strong> = 25.6 - 41.9 = -16.3</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>model_wrong <span class="ot">&lt;-</span> <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> net, <span class="at">data =</span> nets)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_wrong)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = malaria_risk ~ net, data = nets)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-26.937  -9.605  -1.937   7.063  55.395 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  41.9365     0.4049  103.57   &lt;2e-16 ***
+netTRUE     -16.3315     0.6495  -25.15   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 13.25 on 1750 degrees of freedom
+Multiple R-squared:  0.2654,    Adjusted R-squared:  0.265 
+F-statistic: 632.3 on 1 and 1750 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Embora os resultados mostrem uma correlação clara (casas que usam redes mosquiteiras têm, em média, um risco de malária 16,3 pontos menor, numa escala de 0 a 100), não podemos concluir imediatamente que o uso de redes mosquiteiras causa uma redução no risco de malária com base apenas nesses dados. Pode haver outros fatores não considerados que influenciam o risco de malária. As casas que usam redes têm, por exemplo, renda mais alta e melhor saúde, e essas variáveis também afetam o risco de malária (são <em>confundidores</em>). A seguir, usamos o propensity score para ajustar por esses confundidores observáveis.</p>
+</section>
+<section id="propensity-score" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="propensity-score"><span class="header-section-number">2.4</span> Propensity Score</h2>
+<p>O propensity score é a probabilidade de receber o tratamento dadas as características observáveis. O processo tem dois passos:</p>
+<ol type="1">
+<li>Estimar o escore de propensão de cada casa, com uma regressão logística do tratamento (<code>net</code>) nos confundidores.</li>
+<li>Usar o escore para comparar casas parecidas. Faremos isso de três formas: (a) incluindo o escore como controle na regressão, (b) transformando-o em pesos de probabilidade inversa (IPW) e (c) pareando casas tratadas e não tratadas (<em>matching</em>).</li>
+</ol>
+<p>Tudo isso só elimina o viés causado por variáveis <strong>observáveis</strong> incluídas no modelo. Se houver um confundidor não observado, o propensity score não resolve o problema.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nets, <span class="fu">aes</span>(<span class="at">x =</span> income, <span class="at">y =</span> net_num)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linewidth =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> x,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Income"</span>, <span class="at">y =</span> <span class="st">"Probability of using a net"</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="aula05-propensity-score_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Para usar a regressão logística, você deve especificar uma família binomial/logit assim: <em>family = binomial(link = “logit”)</em></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model_logit <span class="ot">&lt;-</span> <span class="fu">glm</span>(net <span class="sc">~</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                     income <span class="sc">+</span> <span class="co">#renda</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                     temperature <span class="sc">+</span> <span class="co">#temperatura média à noite</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                     health, <span class="co">#saude</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> nets,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_logit)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = net ~ income + temperature + health, family = binomial(link = "logit"), 
+    data = nets)
+
+Coefficients:
+              Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -1.3161456  0.3759473  -3.501 0.000464 ***
+income       0.0020865  0.0004212   4.954 7.27e-07 ***
+temperature -0.0588646  0.0125327  -4.697 2.64e-06 ***
+health       0.0068794  0.0042970   1.601 0.109384    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2341.2  on 1751  degrees of freedom
+Residual deviance: 2235.7  on 1748  degrees of freedom
+AIC: 2243.7
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">predict</span>(model_logit, <span class="at">type =</span> <span class="st">"response"</span>), <span class="at">n=</span><span class="dv">20</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1         2         3         4         5         6         7         8 
+0.3673957 0.3889553 0.1580940 0.2626288 0.3077959 0.4293726 0.4773217 0.4319649 
+        9        10        11        12        13        14        15        16 
+0.4099019 0.3555565 0.5076098 0.5894788 0.2752616 0.4056115 0.5876248 0.2012782 
+       17        18        19        20 
+0.3597982 0.3895736 0.3770061 0.1242081 </code></pre>
+</div>
+</div>
+<section id="vamos-extrair-os-escores-do-modelo" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="vamos-extrair-os-escores-do-modelo"><span class="header-section-number">2.4.1</span> Vamos extrair os escores do modelo</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>sc <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_logit, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(sc)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1000789</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(sc)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7417317</code></pre>
+</div>
+</div>
+</section>
+<section id="significado-dos-valores-minimos-e-máximos" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="significado-dos-valores-minimos-e-máximos"><span class="header-section-number">2.4.2</span> <strong>Significado dos Valores minimos e máximos</strong></h3>
+<p><strong>Intervalo de Propensity Scores</strong>:</p>
+<ul>
+<li><p>O intervalo dos scores vai de aproximadamente 0.10 a 0.74.</p></li>
+<li><p>Isso significa que, no seu conjunto de dados, a menor probabilidade estimada de um domicílio participar do tratamento é cerca de 10%, enquanto a maior é cerca de 74%.</p></li>
+</ul>
+<p><strong>Interpretação Prática</strong>:</p>
+<ul>
+<li><p>Um score mais próximo de 1 indica uma maior probabilidade de que, baseando-se nas características observáveis, um domicílio receba o tratamento.</p></li>
+<li><p>Um score mais próximo de 0 indica uma menor probabilidade de participação no tratamento.</p></li>
+</ul>
+</section>
+<section id="agora-vamos-plotar-as-densidades-dos-dois-grupos-inscritos-e-não-inscritos" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="agora-vamos-plotar-as-densidades-dos-dois-grupos-inscritos-e-não-inscritos"><span class="header-section-number">2.4.3</span> Agora vamos plotar as densidades dos dois grupos (inscritos e não inscritos)</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(sc, nets<span class="sc">$</span>net)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(d2)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["sc"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["nets.net"],"name":[2],"type":["lgl"],"align":["right"]}],"data":[{"1":"0.3673957","2":"TRUE","_rn_":"1"},{"1":"0.3889553","2":"FALSE","_rn_":"2"},{"1":"0.1580940","2":"FALSE","_rn_":"3"},{"1":"0.2626288","2":"TRUE","_rn_":"4"},{"1":"0.3077959","2":"FALSE","_rn_":"5"},{"1":"0.4293726","2":"FALSE","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(d2, <span class="fu">aes</span>(<span class="at">x=</span>sc, <span class="at">fill=</span>nets.net, <span class="at">colour=</span>nets.net)) <span class="sc">+</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span>.<span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> nets.net)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="aula05-propensity-score_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(d2, <span class="fu">aes</span>(<span class="at">x=</span>sc, <span class="at">fill=</span>nets.net, <span class="at">colour=</span>nets.net)) <span class="sc">+</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span>.<span class="dv">3</span>)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="aula05-propensity-score_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretação-do-gráfico" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="interpretação-do-gráfico"><span class="header-section-number">2.4.4</span> Interpretação do Gráfico</h3>
+<p><strong>Eixos:</strong></p>
+<ul>
+<li>Eixo X (sc): Representa os propensity scores, que são as probabilidades preditas de participação no tratamento.</li>
+<li>Eixo Y (density): Representa a densidade, indicando a frequência relativa dos scores dentro de cada grupo.</li>
+</ul>
+<p><strong>Distribuições:</strong></p>
+<ul>
+<li>O painel à esquerda mostra a distribuição dos scores para o grupo que não recebeu o tratamento (FALSE).</li>
+<li>O painel à direita mostra a distribuição dos scores para o grupo que recebeu o tratamento (TRUE).</li>
+</ul>
+<p><strong>Sobreposição:</strong></p>
+<ul>
+<li>A sobreposição das distribuições indica a área de comparabilidade, onde os scores dos dois grupos se sobrepõem.</li>
+<li>Essa área é importante para o pareamento, pois permite encontrar unidades não tratadas com scores similares às tratadas, facilitando comparações justas.</li>
+</ul>
+</section>
+<section id="calculando-os-efeitos" class="level3" data-number="2.4.5">
+<h3 data-number="2.4.5" class="anchored" data-anchor-id="calculando-os-efeitos"><span class="header-section-number">2.4.5</span> Calculando os efeitos</h3>
+<p>Com os escores calculados, vamos comparar diferentes estimativas do efeito do uso de redes sobre o risco de malária.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>d3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(nets<span class="sc">$</span>malaria_risk, </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                 nets<span class="sc">$</span>net, </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                 sc)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Modelo 1 - Propensity score como variável de controle</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(nets.malaria_risk <span class="sc">~</span> </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>            nets.net <span class="sc">+</span> </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>            sc, </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">data=</span>d3)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod) </span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = nets.malaria_risk ~ nets.net + sc, data = d3)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-20.1624  -4.7931  -0.4997   4.3289  25.4635 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   77.7597     0.5724  135.84   &lt;2e-16 ***
+nets.netTRUE -10.3258     0.3537  -29.19   &lt;2e-16 ***
+sc           -98.1677     1.4555  -67.45   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.985 on 1749 degrees of freedom
+Multiple R-squared:  0.796, Adjusted R-squared:  0.7958 
+F-statistic:  3412 on 2 and 1749 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Modelo 2 - Estimativa ingênua (sem ajuste)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(nets.malaria_risk <span class="sc">~</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>             nets.net, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>d3)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod2) </span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = nets.malaria_risk ~ nets.net, data = d3)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-26.937  -9.605  -1.937   7.063  55.395 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   41.9365     0.4049  103.57   &lt;2e-16 ***
+nets.netTRUE -16.3315     0.6495  -25.15   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 13.25 on 1750 degrees of freedom
+Multiple R-squared:  0.2654,    Adjusted R-squared:  0.265 
+F-statistic: 632.3 on 1 and 1750 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Modelo 3 - Sem o propensity score mas controlando pelas variáveis do banco</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>             net <span class="sc">+</span> </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>             income <span class="sc">+</span> </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>             temperature <span class="sc">+</span> </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>             health,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> nets)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod3) </span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = malaria_risk ~ net + income + temperature + health, 
+    data = nets)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-13.143  -3.915  -0.561   3.333  16.461 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  76.159901   0.926835   82.17   &lt;2e-16 ***
+netTRUE     -10.441932   0.264906  -39.42   &lt;2e-16 ***
+income       -0.075144   0.001035  -72.58   &lt;2e-16 ***
+temperature   1.005855   0.030953   32.50   &lt;2e-16 ***
+health        0.148362   0.010668   13.91   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.244 on 1747 degrees of freedom
+Multiple R-squared:  0.8852,    Adjusted R-squared:  0.8849 
+F-statistic:  3366 on 4 and 1747 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Modelo 4 - Ponderação pelo inverso da probabilidade (IPW)</p>
+<p>Cada casa tratada recebe peso <span class="math inline">\(1/\hat{p}\)</span> e cada casa não tratada recebe peso <span class="math inline">\(1/(1-\hat{p})\)</span>, onde <span class="math inline">\(\hat{p}\)</span> é o escore de propensão. Assim, casas que receberam um tratamento “improvável” para o seu perfil ganham mais peso, e os dois grupos ficam balanceados nos confundidores.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>nets <span class="ot">&lt;-</span> nets <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sc =</span> sc,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">ipw =</span> <span class="fu">ifelse</span>(net_num <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">/</span> sc, <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> sc)))</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>mod_ipw <span class="ot">&lt;-</span> <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> net, <span class="at">data =</span> nets, <span class="at">weights =</span> ipw)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_ipw)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = malaria_risk ~ net, data = nets, weights = ipw)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-45.705 -14.622  -4.924  10.791 162.642 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  39.6788     0.4684   84.71   &lt;2e-16 ***
+netTRUE     -10.1312     0.6583  -15.39   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 19.54 on 1750 degrees of freedom
+Multiple R-squared:  0.1192,    Adjusted R-squared:  0.1187 
+F-statistic: 236.8 on 1 and 1750 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Modelo 5 - Pareamento (<em>matching</em>)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pareamento <span class="ot">&lt;-</span> <span class="fu">matchit</span>(net <span class="sc">~</span> income <span class="sc">+</span> temperature <span class="sc">+</span> health,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> nets,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">method =</span> <span class="st">"nearest"</span>,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">distance =</span> <span class="st">"mahalanobis"</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pareamento)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+matchit(formula = net ~ income + temperature + health, data = nets, 
+    method = "nearest", distance = "mahalanobis", replace = TRUE)
+
+Summary of Balance for All Data:
+            Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+income           955.1938      872.7526          0.4089     1.3633    0.1044
+temperature       23.3809       24.0880         -0.1685     1.0846    0.0424
+health            54.9090       48.0570          0.3619     1.2083    0.0714
+            eCDF Max
+income        0.1983
+temperature   0.0972
+health        0.1683
+
+Summary of Balance for Matched Data:
+            Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+income           955.1938      950.1836          0.0248     1.1061    0.0093
+temperature       23.3809       23.4066         -0.0061     1.0335    0.0067
+health            54.9090       54.5433          0.0193     1.0714    0.0073
+            eCDF Max Std. Pair Dist.
+income        0.0485          0.1202
+temperature   0.0264          0.1196
+health        0.0264          0.1239
+
+Sample Sizes:
+              Control Treated
+All           1071.       681
+Matched (ESS)  320.94     681
+Matched        436.       681
+Unmatched      635.         0
+Discarded        0.         0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>dados_pareados <span class="ot">&lt;-</span> <span class="fu">match.data</span>(pareamento)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Com reposição, cada caso de controle pode ser usado mais de uma vez:</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># por isso é obrigatório usar os pesos gerados pelo matchit</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>mod_match <span class="ot">&lt;-</span> <span class="fu">lm</span>(malaria_risk <span class="sc">~</span> net, <span class="at">data =</span> dados_pareados, <span class="at">weights =</span> weights)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_match)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = malaria_risk ~ net, data = dados_pareados, weights = weights)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-38.295  -7.605  -2.365   5.395  55.395 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  36.0896     0.5971   60.45   &lt;2e-16 ***
+netTRUE     -10.4846     0.7647  -13.71   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 12.47 on 1115 degrees of freedom
+Multiple R-squared:  0.1443,    Adjusted R-squared:  0.1435 
+F-statistic:   188 on 1 and 1115 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+<section id="conclusão" class="level3" data-number="2.4.6">
+<h3 data-number="2.4.6" class="anchored" data-anchor-id="conclusão"><span class="header-section-number">2.4.6</span> Conclusão:</h3>
+<p>Todos os modelos indicam que o uso de redes mosquiteiras está associado a uma redução no risco de malária, mas a magnitude varia:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Modelo</th>
+<th>Estimativa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Diferença de médias (ingênuo)</td>
+<td>cerca de −16,3</td>
+</tr>
+<tr class="even">
+<td>Propensity score como controle</td>
+<td>cerca de −10,3</td>
+</tr>
+<tr class="odd">
+<td>Controles diretos na regressão</td>
+<td>cerca de −10,4</td>
+</tr>
+<tr class="even">
+<td>Ponderação (IPW)</td>
+<td>cerca de −10,1</td>
+</tr>
+<tr class="odd">
+<td>Pareamento</td>
+<td>ver resultado acima</td>
+</tr>
+</tbody>
+</table>
+<p>A estimativa ingênua exagera o efeito porque as casas que usam redes já tinham, por outros motivos (renda, saúde, temperatura), menor risco de malária. Quando ajustamos pelos confundidores observáveis, as estimativas se aproximam do verdadeiro efeito de −10 pontos definido na simulação; a ponderação (IPW) é a que chega mais perto. Lembre que isso só funciona porque, nesta simulação, sabemos que renda, temperatura e saúde são todos os confundidores relevantes. Com dados reais, nunca temos essa garantia.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/aulas/05-propensity-score/aula05-propensity-score.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></div></div></footer></body></html>

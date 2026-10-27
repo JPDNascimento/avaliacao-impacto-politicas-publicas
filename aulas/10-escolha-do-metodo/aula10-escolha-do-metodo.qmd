@@ -1,0 +1,120 @@
+---
+title: "Aula 10 — Resolução de problemas em gestão pública: qual método usar?"
+author: "João Paulo Dellasta"
+---
+
+Nesta atividade, cada caso apresenta uma pergunta de pesquisa e os dados disponíveis. A tarefa é identificar o desenho de avaliação mais adequado, formular a hipótese e listar os pressupostos que precisariam ser verificados. Tente responder antes de abrir a resposta.
+
+# Caso 1
+
+**Pergunta de pesquisa:** como a implementação de um novo programa de bolsas de estudo afeta o desempenho acadêmico dos estudantes em escolas públicas?
+
+**Banco de dados:**
+
+- Notas dos estudantes que receberam e que não receberam as bolsas, antes e depois da implementação do programa.
+- Informação sobre a elegibilidade para o programa, definida por um limiar de renda bem definido: se a renda familiar é menor do que meio salário mínimo por pessoa, o estudante é elegível para receber a bolsa.
+- Dados demográficos e sociais dos estudantes, como idade, anos estudados em escolas públicas, escolaridade do pai e da mãe e quantidade de mudanças de escola no último ano.
+
+::: {.callout-tip collapse="true"}
+## Resposta: Regressão com Descontinuidade (RDD)
+
+**Hipótese:** o desempenho acadêmico dos estudantes logo **abaixo** do limiar de renda (elegíveis à bolsa) será melhor do que o dos estudantes logo **acima** do limiar (não elegíveis), devido ao acesso a recursos educacionais adicionais.
+
+**Estratégia:** comparar o desempenho dos estudantes imediatamente abaixo e imediatamente acima do limiar de elegibilidade. Perto do corte, os dois grupos devem ser muito parecidos em tudo, exceto no acesso à bolsa. As covariáveis demográficas podem ser incluídas como controles e usadas para testar o balanceamento.
+
+**Por que RDD:** a regra de elegibilidade é um corte claro em uma variável contínua (renda per capita). Se nem todos os elegíveis recebem a bolsa, o desenho é um RDD *fuzzy*, e o efeito é estimado para quem cumpre a regra no entorno do corte.
+
+**Verificações necessárias:**
+
+- Testar se as covariáveis são contínuas (balanceadas) em torno do limiar.
+- Verificar se há manipulação da renda declarada para ficar abaixo do corte (teste de densidade de McCrary).
+- Testar a sensibilidade a diferentes janelas (*bandwidths*) e formas funcionais.
+- Lembrar que o efeito é **local**: vale para estudantes perto do limiar.
+
+Como há dados antes e depois do programa, também é possível usar as notas pré-programa como teste de placebo: não deveria haver descontinuidade nas notas antes da bolsa existir.
+:::
+
+# Caso 2
+
+**Pergunta de pesquisa:** qual o impacto da reforma tributária sobre as pequenas empresas em diferentes regiões?
+
+**Banco de dados:**
+
+- Receita e lucro das pequenas empresas antes e depois da reforma.
+- Dados das regiões onde as empresas estão localizadas.
+- Informações sobre políticas fiscais locais.
+- Antes da reforma, as regiões apresentavam trajetórias de desempenho econômico semelhantes ao longo do tempo.
+- Algumas regiões implementaram a reforma tributária e outras não.
+
+::: {.callout-tip collapse="true"}
+## Resposta: Diferenças em Diferenças (DiD)
+
+**Hipótese:** as pequenas empresas nas regiões que implementaram a reforma terão desempenho econômico melhor do que as empresas em regiões sem a reforma, devido a um ambiente fiscal mais favorável.
+
+**Estratégia:** comparar a **mudança** em receitas e lucros (depois − antes) das empresas em regiões que implementaram a reforma com a mudança nas regiões que não implementaram.
+
+**Por que DiD:** há grupo tratado e grupo de controle, observados antes e depois da intervenção, e a informação de que as trajetórias eram semelhantes antes da reforma sugere que o pressuposto de tendências paralelas é plausível.
+
+**Verificações necessárias:**
+
+- Confirmar as tendências paralelas pré-tratamento (gráficos e testes de *event study*/placebo).
+- Garantir que não houve outros choques simultâneos que afetaram só as regiões tratadas.
+- Avaliar se a decisão de implementar a reforma esteve relacionada a expectativas sobre o desempenho futuro das empresas (o que violaria o pressuposto).
+- Usar erros-padrão clusterizados por região.
+:::
+
+# Caso 3
+
+**Pergunta de pesquisa:** como programas de habitação social afetam a qualidade de vida em diferentes bairros?
+
+**Banco de dados:**
+
+- Dados sobre qualidade de vida (saúde, educação, renda) antes e depois da implementação dos programas.
+- Informações sobre os bairros (demografia, infraestrutura, economia, mercado de trabalho).
+- Detalhes dos programas de habitação social.
+
+::: {.callout-tip collapse="true"}
+## Resposta: Pareamento (*matching* / propensity score), idealmente combinado com DiD
+
+**Hipótese:** bairros que implementaram programas de habitação social terão melhoria significativa na qualidade de vida de seus residentes em comparação com bairros semelhantes sem esses programas, devido ao acesso a moradias adequadas.
+
+**Estratégia:** parear cada bairro com programa a bairros sem programa que sejam parecidos nas características observáveis (demografia, infraestrutura, economia, mercado de trabalho) e comparar a evolução da qualidade de vida.
+
+**Pressuposto central (seleção nos observáveis):** depois de condicionar nas características observadas, a escolha dos bairros que receberam o programa não está relacionada a outros fatores que afetam a qualidade de vida. **O pareamento só equilibra os grupos nas variáveis observadas**; diferentemente de um experimento, ele não garante equilíbrio nas variáveis não observadas. Por isso, a credibilidade depende de termos medido todos os fatores relevantes que influenciaram a seleção dos bairros.
+
+Como há dados antes e depois, uma estratégia mais robusta é combinar pareamento com Diferenças em Diferenças: comparar a *mudança* na qualidade de vida entre bairros pareados elimina também diferenças não observadas que sejam fixas no tempo.
+
+**Verificações necessárias:**
+
+- Testar o balanceamento das covariáveis depois do pareamento.
+- Verificar o suporte comum (sobreposição dos escores de propensão).
+- Fazer análises de sensibilidade a possíveis confundidores não observados.
+:::
+
+# Caso 4
+
+**Pergunta de pesquisa:** qual o efeito de políticas de transporte público sobre a mobilidade urbana em diferentes cidades?
+
+**Hipótese:** cidades que introduziram políticas de transporte público inovadoras terão uma mobilidade urbana mais eficiente (tempos de viagem menores e maior uso de transporte público) do que cidades que não implementaram essas políticas.
+
+**Banco de dados:**
+
+- Dados sobre mobilidade urbana (tempo de viagem, uso de transporte público) ao longo de vários anos.
+- Informações sobre as políticas de transporte público.
+- Dados socioeconômicos das cidades.
+- As cidades introduziram as políticas em momentos diferentes e tinham níveis diferentes de eficiência de mobilidade antes das novas políticas.
+
+::: {.callout-tip collapse="true"}
+## Resposta: Dados em painel (efeitos fixos)
+
+**Estratégia:** estimar um modelo de painel com efeitos fixos de cidade (que absorvem as diferenças permanentes entre cidades, como os níveis distintos de mobilidade antes da política) e efeitos fixos de ano (que absorvem choques comuns a todas as cidades). O efeito é identificado pela variação no tempo dentro de cada cidade, comparando o antes e o depois da adoção.
+
+**Por que painel com efeitos fixos:** as cidades diferem em níveis antes da política, o que torna efeitos aleatórios pouco plausíveis (eles supõem que essas diferenças não estão correlacionadas com a adoção). O teste de Hausman pode ser usado para comparar as duas especificações.
+
+**Verificações necessárias:**
+
+- Variação temporal suficiente na adoção das políticas.
+- Ausência de tendências específicas das cidades que coincidam com a adoção (testar tendências pré-adoção).
+- Como a adoção ocorre em momentos diferentes (*adoção escalonada*), o estimador de efeitos fixos de duas vias (TWFE) pode ser viesado quando os efeitos variam no tempo; estimadores mais recentes de DiD com adoção escalonada (por exemplo, Callaway e Sant'Anna, 2021) são uma alternativa recomendada.
+- Erros-padrão clusterizados por cidade.
+:::

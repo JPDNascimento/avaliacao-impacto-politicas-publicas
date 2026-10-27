@@ -1,0 +1,353 @@
+---
+title: "Aula 8 — Dados em painel: primeiras diferenças, efeitos fixos e aleatórios"
+author: "João Paulo Dellasta"
+---
+
+# Pacotes necessários
+
+```{r}
+library(foreign)  # read.dta()
+library(lmtest)   # coeftest()
+library(sandwich) # erros-padrão robustos e clusterizados para lm()
+library(plm)      # modelos de painel
+```
+
+
+# Dados
+
+# Descrição do Banco
+
+Os dados (`MURDER1`, de Wooldridge, *Introdução à Econometria*) cobrem os 50 estados americanos e o Distrito de Colúmbia (51 unidades) em 1987, 1990 e 1993.
+
+- id: identificador numérico do estado
+- state: sigla do estado
+- year: ano
+- mrdrte: taxa de homicídios (por 100 mil habitantes)
+- exec: número de execuções (pena de morte) nos três anos anteriores
+- unem: taxa de desemprego (%)
+- d90: dummy para o ano de 1990
+- d93: dummy para o ano de 1993
+
+## Carregando os dados
+
+```{r}
+dat <- read.dta("../../dados/MURDER1.dta")
+head(dat)
+summary(dat)
+```
+
+## Explorar as informações
+
+### Taxas de homicídio por ano (com e sem DC)
+
+```{r}
+par(mfrow=c(1,2)) #plotar dois graficos na mesma linha
+
+plot(dat$year, 
+     dat$mrdrte, 
+     main = "Taxas de homicídio por ano, todos os estados",
+     cex.main = .75,
+     xlab = "Ano",
+     ylab = "Taxa de homicídio",
+     cex.lab = .7)
+
+lines(lowess(dat$year, dat$mrdrte), 
+      col = "red") 
+
+sem_dc <- dat[dat$state != "DC", ]
+
+plot(sem_dc$year, 
+     sem_dc$mrdrte,
+     main = "Taxas de homicídio, excluindo DC",
+     cex.main = .75,
+     xlab = "Ano",
+     ylab = "Taxa de homicídio",
+     cex.lab = .7)
+
+lines(lowess(sem_dc$year, sem_dc$mrdrte), col = "red") 
+```
+### Taxas de homicídio por ano e por estado
+
+```{r}
+#| fig-height: 12
+par(mfrow=c(7,8), 
+    mar=c(3,1,1,1), 
+    oma=c(0,0,0,0))
+
+for (j in min(dat$id):max(dat$id)) {
+  este_estado <- dat[dat$id == j, ]          # linhas do estado j
+  plot(este_estado$year,
+       este_estado$mrdrte,
+       type = "l",
+       main = este_estado$state[1],
+       xlab = ifelse(j == 1, "Ano", ""),
+       ylab = ifelse(j == 1, "Taxa", ""))
+}
+```
+
+
+### Quantas informações temos por estado?
+```{r}
+table(dat$state)
+```
+
+### Quantas informações temos por ano?
+```{r}
+table(dat$year)
+```
+
+
+# Regressão múltipla (sem considerar a estrutura de painel)
+
+
+```{r}
+lmout <- lm(mrdrte ~ #Taxa de homicídios
+              exec + #Número de execuções (pena de morte)
+              unem,
+            data = dat) #banco de dados
+
+summary(lmout)
+```
+
+A primeira regressão estimada com lm é uma regressão linear múltipla que busca modelar a relação entre a taxa de homicídios (mrdrte) e duas variáveis explicativas principais: o número de execuções (exec) e a taxa de desemprego (unem). 
+
+Este modelo inicial sugere que:
+A taxa de desemprego tem uma associação positiva e estatisticamente significativa com a taxa de homicídios, indicando que condições econômicas adversas podem estar associadas a maiores níveis de criminalidade.
+O número de execuções relacionadas à pena de morte não apresenta relação significativa com a taxa de homicídios neste modelo.
+Apesar da significância do modelo como um todo 
+(F = 4.98,p=0.0081), o baixo valor do R2 indica que grande parte da variação na taxa de homicídios não é explicada pelas variáveis incluídas no modelo, sugerindo a necessidade de incorporar outras variáveis ou metodologias mais sofisticadas (como efeitos fixos ou aleatórios).
+
+Esse modelo serve como uma análise exploratória inicial para entender os determinantes das taxas de homicídio nos estados americanos e pode ser expandido para incluir controles adicionais ou técnicas econométricas mais robustas (como modelos em painel).
+
+
+# Modelo Pooled OLS
+
+$$
+y_{it} = X_{it}\beta + \delta_t + v_{it}, \qquad v_{it} = \eta_i + \varepsilon_{it}
+$$
+
+Em que $\delta_t$ são os efeitos de ano e o erro composto $v_{it}$ inclui uma parte fixa de cada estado ($\eta_i$) e uma parte idiossincrática ($\varepsilon_{it}$). O Pooled OLS só é consistente se $\eta_i$ não for correlacionado com as variáveis explicativas.
+
+```{r}
+lmout <- lm(mrdrte ~ #Taxa de homicídios
+              exec + #Número de execuções (pena de morte)
+              unem + #Situação economia (controle)
+              d90 +  #Variável dummy ano 1990 (controle de efeito de tempo)
+              d93,   #Variável dummy ano 1993 (controle de efeito de tempo)
+            data = dat) #banco de dados
+
+# Erros-padrão clusterizados por estado (as 3 observações de um mesmo estado não são independentes)
+coeftest(lmout, vcov = vcovCL(lmout, cluster = ~ id, type = "HC1"))
+
+```
+
+
+O modelo Pooled OLS estimado trata todas as observações como pertencentes a uma única amostra, ignorando a estrutura de painel (diferenças entre estados e ao longo do tempo).
+
+Com erros-padrão clusterizados, a associação com o desemprego continua positiva e a de execuções continua não significativa.
+
+O Pooled OLS com dummies de tempo é uma abordagem inicial útil para explorar relações entre variáveis em dados de painel. No entanto, ele ignora diferenças específicas entre estados (heterogeneidade não observada) e assume que todas as observações são independentes. Isso pode levar a problemas como:
+Viés por omissão de variáveis: Se houver fatores específicos dos estados que não mudam ao longo do tempo (ex., cultura local ou políticas estaduais), eles não serão controlados no modelo.
+Correlação serial nos erros: Observações do mesmo estado ao longo do tempo podem estar correlacionadas.
+Por isso, é comum usar modelos mais robustos (como efeitos fixos ou aleatórios) após essa análise inicial.
+
+
+# Estimador de primeira diferença
+
+```{r}
+library(plm) #função para rodar o painel
+
+head(dat) #id, estado e ano. 
+
+pdat <- pdata.frame(dat, #criando o banco próprio para o plm
+                    c("state", #dizendo pra ele onde estão os casos 
+                      "year")) #dizendo pra ele onde estão os anos 
+
+head(pdat) #variavel que combina "caso-ano"
+
+# Estimar o modelo de primeiras diferenças
+
+model_fd <- plm(mrdrte ~ exec + unem + d90 + d93, 
+                data = pdat, 
+                model = "fd")
+
+# Resumo dos resultados
+
+# Erros-padrão clusterizados por estado (no plm, cluster = "group")
+coeftest(model_fd, vcov = vcovHC(model_fd, cluster = "group", type = "HC1"))
+
+```
+
+**Discussão dos Resultados**
+
+- A variável Δexec (mudança no número de execuções) apresenta uma relação negativa e significativa com a taxa de homicídios, sugerindo que aumentos no número de execuções podem estar associados a reduções nas taxas de homicídio.
+
+- A variável Δunem (mudança na taxa de desemprego) não apresenta significância estatística, indicando que variações econômicas podem não ter impacto direto sobre as taxas criminais no curto prazo.
+
+- A dummy temporal (Δd90) também não é significativa. Em primeiras diferenças, o intercepto captura a mudança média comum entre períodos, e a dummy de 1993 é eliminada por colinearidade com o intercepto e a dummy de 1990.
+
+**Limitações do Modelo**
+
+- O modelo assume que todas as características fixas dos estados foram eliminadas, mas pode haver fatores temporais correlacionados com as variáveis explicativas que ainda causem viés.
+A análise foca apenas nas diferenças entre períodos consecutivos e pode ignorar tendências mais amplas ou efeitos acumulativos.
+
+
+# Estimação de efeitos fixos
+
+## Opção 1: usar pacote plm 
+
+### Transformando o dado
+```{r}
+library(plm)
+
+pdat <- pdata.frame(dat,c("state","year"))
+
+head(dat)
+head(pdat)
+```
+
+### Fazendo a regressão plm
+```{r}
+
+plmout_fe <- plm(mrdrte ~ #Y
+                   exec + #X1
+                   unem + #X2
+                   d90 +  #X3 efeito fixo por ano
+                   d93,   #X4 efeito fixo por ano
+                 model="within", #efeito fixo por estado! indicando que estamos controlando pela variancia dentro de cada caso (intercepto de cada caso)
+                 data=pdat) #dados
+
+summary(plmout_fe)
+
+# Ajustar erros padrão robustos por cluster (no nível do estado)
+coeftest(plmout_fe, vcov = vcovHC(plmout_fe, type = "HC1", cluster = "group"))
+
+```
+
+
+O modelo de efeitos fixos (Fixed Effects) é uma abordagem que controla por características específicas de cada unidade (como estados, países ou indivíduos) que não variam ao longo do tempo. Essas características podem ser observáveis ou não, mas são constantes para cada unidade durante o período analisado. Ele elimina a influência dessas características fixas para focar na variação dentro das unidades, permitindo analisar como mudanças nas variáveis explicativas estão associadas à variável dependente.
+Exemplos de Características Controladas pelo Modelo de Efeitos Fixos
+
+No contexto do nosso estudo, em que estamos analisando a relação entre taxas de homicídio, execuções e desemprego nos estados americanos ao longo do tempo, o modelo de efeitos fixos controla por fatores que são específicos de cada estado e não mudam ao longo do tempo. 
+
+Exemplos incluem:
+
+- **Fatores culturais e sociais:** normas culturais relacionadas à violência; atitudes da população em relação à pena de morte; níveis históricos de desigualdade social.
+- **Fatores políticos e institucionais:** estruturas institucionais de cada estado (sistemas judiciais mais ou menos rigorosos); políticas locais que não mudaram no período (ex.: leis sobre porte de armas).
+- **Fatores geográficos e demográficos:** localização (ex.: proximidade de fronteiras que influenciam o tráfico de drogas ou armas); composição demográfica estável.
+- **Histórico econômico:** nível histórico de desenvolvimento; dependência de setores específicos (estados agrícolas versus industriais).
+- **Infraestrutura e urbanização:** grau de urbanização; infraestrutura policial e judicial instalada.
+
+Esses fatores são eliminados no modelo porque são constantes ao longo do tempo para cada estado, permitindo que o modelo foque apenas nas variações temporais dentro dos estados.
+
+
+O modelo de efeitos fixos fornece evidências preliminares sobre os determinantes das taxas de homicídio nos estados americanos:
+Há indícios marginais (nível 10%) de que aumentos no número de execuções podem estar associados a reduções nas taxas criminais.
+Mudanças econômicas (taxa de desemprego) não apresentam impacto significativo sobre as taxas criminais neste contexto.
+Fatores temporais específicos (capturados pela dummy para o ano de 1993) parecem influenciar significativamente as taxas criminais.
+
+```{r}
+within_intercept(plmout_fe) #qual é a média do mrdrte quando tudo o resto é zero? 
+fixef(plmout_fe) # intercepto estimado de cada estado (efeito fixo, em nível)
+
+par(mfrow=c(1,1))
+efeitos_fixos <- sort(fixef(plmout_fe))
+dotchart(as.numeric(efeitos_fixos), labels = names(efeitos_fixos), cex = 0.6,
+         xlab = "Efeito fixo estimado (intercepto do estado)")
+```
+
+Interpretação Geral:
+
+Os efeitos fixos capturam características específicas dos estados que não variam ao longo do tempo, como cultura, infraestrutura policial ou políticas locais.
+
+Por padrão, `fixef()` devolve o intercepto de cada estado (o nível de homicídios previsto para o estado quando execuções, desemprego e as dummies de ano são zero), e não o desvio em relação à média. Estados como DC (61,49), Louisiana (13,91) e Nova York (10,62) têm os maiores interceptos, ou seja, taxas persistentemente mais altas depois de controlar pelas variáveis do modelo; Maine, Dakota do Norte e Iowa têm os menores. Para ver os efeitos como desvios da média, use `fixef(plmout_fe, type = "dmean")`.
+
+Significado Prático
+
+- Como vimos, os efeitos fixos ajudam a explicar diferenças persistentes entre os estados que não podem ser atribuídas às variáveis explicativas incluídas no modelo (execuções, desemprego, dummies temporais). Esses fatores podem incluir: Políticas estaduais específicas; Estruturas institucionais locais; Fatores culturais ou demográficos estáveis ao longo do tempo.
+
+Por exemplo:
+
+- O território de DC apresenta um efeito fixo extremamente alto devido a fatores históricos e estruturais que contribuem para taxas elevadas de homicídio, como desigualdade social e problemas urbanos.
+Já estados rurais como Maine e Dakota do Norte têm efeitos fixos baixos devido à menor densidade populacional e menor exposição à criminalidade violenta.
+
+
+## Opção 2: usar lm, com factor(id), e limitar a impressão
+
+```{r}
+lmout_fe <- lm(mrdrte ~ exec + 
+                 unem + 
+                 d90 +   #efeito fixo por ano
+                 d93 +  #efeito fixo por ano
+                 factor(id), # Efeito fixo por estado. colocando uma dummy para cada estado 
+               data=dat)
+
+# Erros-padrão clusterizados por estado. Mostramos só as 5 primeiras linhas;
+# as demais são as dummies de cada estado
+coeftest(lmout_fe, vcov = vcovCL(lmout_fe, cluster = ~ id, type = "HC1"))[1:5, ]
+```
+
+
+# Estimador de efeitos aleatórios
+## usando plm
+
+### transformando o dado
+```{r}
+library(plm)
+
+pdat <- pdata.frame(dat,c("state","year"))
+
+head(dat)
+head(pdat)
+```
+
+### fazendo a regressão plm
+```{r}
+
+plmout_re <- plm(mrdrte ~ 
+                   exec + 
+                   unem + 
+                   d90 + 
+                   d93, 
+                 model="random", #efeito aleatório
+                 # usa tanto a variação dentro das unidades ao longo do tempo
+                 # quanto a variação entre as unidades. Cada unidade tem seu
+                 # próprio intercepto aleatório; os coeficientes das variáveis
+                 # explicativas são os mesmos para todas as unidades.
+                 data=pdat)
+
+# Erros-padrão clusterizados por estado, calculados a partir do PRÓPRIO modelo de efeitos aleatórios
+coeftest(plmout_re, vcov = vcovHC(plmout_re, type = "HC1", cluster = "group"))
+
+```
+
+O modelo de efeitos aleatórios (Random Effects) é uma abordagem econométrica usada para analisar dados em painel. Ele considera que as diferenças entre as unidades (neste caso, estados) são aleatórias e não correlacionadas com as variáveis explicativas. Isso permite que o modelo utilize tanto a variação dentro das unidades ao longo do tempo quanto a variação entre as unidades para estimar os coeficientes.
+
+
+Os efeitos aleatórios assumem que as características específicas de cada unidade (estado) são capturadas por um intercepto aleatório (αi), que é tratado como uma variável aleatória com média zero e variância constante. Diferentemente dos efeitos fixos, que eliminam completamente essas características específicas, o modelo de efeitos aleatórios as incorpora como parte do erro.
+
+Exemplo:
+Características específicas dos estados, como cultura, infraestrutura policial ou políticas locais, são tratadas como aleatórias.
+O modelo assume que essas características não estão correlacionadas com as variáveis explicativas (ex.: número de execuções ou taxa de desemprego).
+
+No modelo de efeitos aleatórios, usamos dois tipos de variação:
+
+- **Variação dentro das unidades (estados):** como os estados mudam ao longo do tempo nas taxas de homicídio e nas variáveis explicativas.
+- **Variação entre as unidades (estados):** diferenças médias entre os estados.
+
+Isso significa que o modelo considera tanto as mudanças temporais dentro dos estados quanto as diferenças estruturais entre eles.
+
+
+# Teste de Hausman
+
+```{r}
+# Temos objetos de modelo Fixed e Random acima
+# (plmout_re e plmout_fe).
+# Chame phtest com eles:
+phtest(plmout_re, plmout_fe)
+```
+Se o valor-p > 0,05, não podemos rejeitar a hipótese nula e permanecemos com o modelo de efeitos aleatórios. 
+
+Se o valor-p < 0,05, rejeitamos a hipótese nula e ficamos com o modelo de efeitos fixos.
+
+A hipótese nula do teste é que os efeitos individuais não são correlacionados com as variáveis explicativas (condição em que tanto FE quanto RE são consistentes, e RE é mais eficiente). Observe que o teste de Hausman padrão supõe erros homocedásticos e não correlacionados; com erros clusterizados, ele deve ser lido com cautela.

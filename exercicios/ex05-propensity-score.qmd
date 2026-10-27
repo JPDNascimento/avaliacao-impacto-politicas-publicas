@@ -1,0 +1,156 @@
+---
+title: "Exercício 5 — Avaliando o HISP com propensity score"
+author: "Nome do(a) aluno(a)"
+---
+
+Entrega original: 29/11/2024.
+
+# Avaliando HISP com propensity scores
+
+## Passo-a-passo
+
+No contexto desse trabalho, o Propensity Score é utilizado para estimar o efeito causal do tratamento (programa de subsídio) nos gastos com saúde.
+
+# Bibliotecas
+
+Primeiro, carrega as bibliotecas que utilizaremos
+
+```{r}
+library(haven)
+library(tidyverse)
+```
+
+## Carregando e Analisando os Dados
+
+O próximo passo é carregar os dados e realizar uma análise exploratória básica.
+
+```{r}
+# Carregar o banco de dados
+d <- read_dta(file = '../dados/evaluation.dta')
+
+# O banco tem duas rodadas: linha de base (round = 0, antes do programa)
+# e acompanhamento (round = 1, depois). O efeito do programa deve ser medido
+# no resultado DEPOIS da inscrição, então usamos apenas a rodada de acompanhamento.
+d <- d[d$round == 1, ]
+```
+
+| Nome da Variável (Inglês) | Descrição (Português)                                                         |
+|---------------------------------------|---------------------------------|
+| locality_identifier       | Identificador da localidade                                                   |
+| household_identifier      | Identificador único do domicílio                                              |
+| treatment_locality        | Domicílio está localizado em comunidade de tratamento (0=não, 1=sim)          |
+| promotion_locality        | Domicílio está localizado em comunidade promovida (0=não, 1=sim)              |
+| eligible                  | Domicílio elegível para se inscrever no HISP (0=não, 1=sim)                   |
+| enrolled                  | Domicílio inscrito no HISP (0=não, 1=sim)                                     |
+| enrolled_rp               | Domicílio inscrito no HISP sob o cenário de promoção aleatória (0=não, 1=sim) |
+| poverty_index             | Índice de Pobreza 1-100                                                       |
+| round                     | Rodada da pesquisa (0 = linha de base; 1 = acompanhamento)                    |
+| health_expenditures       | Despesas de saúde do próprio bolso (por pessoa por ano)                       |
+| age_hh                    | Idade do chefe do domicílio (em anos)                                         |
+| age_sp                    | Idade do cônjuge (em anos)                                                    |
+| educ_hh                   | Educação do chefe do domicílio (anos completos de escolaridade)               |
+| educ_sp                   | Educação do cônjuge (anos completos de escolaridade)                          |
+| female_hh                 | Chefe do domicílio é mulher (0=não, 1=sim)                                    |
+| indigenous                | Chefe do domicílio fala uma língua indígena (0=não, 1=sim)                    |
+| hhsize                    | Número de membros do domicílio (linha de base)                                |
+| dirtfloor                 | Casa tem piso de terra na linha de base (0=não, 1=sim)                        |
+| bathroom                  | Casa com banheiro privado na linha de base (0=não, 1=sim)                     |
+| land                      | Número de hectares de terra possuídos pelo domicílio na linha de base         |
+| hospital_distance         | Distância até o hospital mais próximo                                         |
+| hospital                  | Membro do domicílio visitou hospital no ano passado (0=não, 1=sim)            |
+
+```{r}
+# Visualizar as primeiras linhas e dimensões
+dim(d)
+
+# Analisando a variável outcome (gastos em saúde)
+
+# Distribuição
+hist(d$health_expenditures)
+
+# Média simples dos gastos em saúde
+mean(d$health_expenditures)
+
+# Diferença de médias entre inscritos e não inscritos
+mean(d$health_expenditures[d$enrolled == 1]) - mean(d$health_expenditures[d$enrolled == 0])
+
+d %>%
+  group_by(enrolled) %>%
+  summarise(n_pessoas = n(),
+            mean_health = mean(health_expenditures),
+            std_error = sd(health_expenditures) / sqrt(n_pessoas))
+```
+
+## Testes Estatísticos
+
+A seguir, realizamos testes estatísticos para verificar se a diferença de médias é estatisticamente significativa.
+
+```{r}
+with(d, t.test(health_expenditures~enrolled==1))
+```
+
+------------------------------------------------------------------------
+
+# Questão 1 - Explique o resultado do teste t
+
+## **Resposta:**
+
+------------------------------------------------------------------------
+
+## Estratégia de escore de propensão
+
+### Passo 1: Calcular os Escores de Propensão
+
+```{r}
+prop <- glm(enrolled ~ age_hh + age_sp + educ_hh + educ_sp + indigenous + hhsize + dirtfloor + bathroom + land + hospital_distance, family=binomial(link="probit"), data=d)
+summary(prop)
+```
+
+------------------------------------------------------------------------
+
+# Questão 2 - Explique o que estamos fazendo no passo 1
+
+## **Resposta:**
+
+------------------------------------------------------------------------
+
+# Passo 2: Extração dos Escores e Plotagem das Densidades
+
+```{r}
+sc <- predict(prop, type="response")
+
+d2 <- data.frame(sc, d$enrolled)
+
+ggplot(d2, aes(x=sc, fill=factor(d.enrolled), colour=factor(d.enrolled))) + 
+  geom_density(alpha=.3) + 
+  facet_grid(. ~ d.enrolled) +
+  labs(x = "Escore de propensão", fill = "Inscrito", colour = "Inscrito")
+
+
+```
+
+------------------------------------------------------------------------
+
+# Questão 3 - Explique o que estamos fazendo no passo 2
+
+## **Resposta:**
+
+------------------------------------------------------------------------
+
+# Passo 3: Estimação do Efeito Causal usando Escores de Propensão
+
+```{r}
+d3 <- data.frame(d$health_expenditures, d$enrolled, sc)
+mod <- lm(d.health_expenditures ~ d.enrolled + sc, data=d3)
+summary(mod)
+mod_simple <- lm(d.health_expenditures ~ d.enrolled, data=d3)
+summary(mod_simple)
+```
+
+------------------------------------------------------------------------
+
+# Questão 4 - Explique o que estamos fazendo no passo 3 e os resultados obtidos com o método de propensity score.
+
+## **Resposta:**
+
+------------------------------------------------------------------------

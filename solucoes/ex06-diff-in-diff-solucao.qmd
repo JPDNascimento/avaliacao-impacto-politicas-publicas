@@ -1,0 +1,101 @@
+---
+title: "Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (solução)"
+author: "João Paulo Dellasta"
+---
+
+# Instruções
+
+As respostas devem ser entregues como um relatório automatizado gerado em Quarto (html, pdf ou word). Entrega original: 12/12/2024, às 23h59.
+
+# Exercício - Diferenças em Diferenças
+
+**Aumentar o salário mínimo reduz o emprego?**
+
+Vamos replicar o estudo de Card e Krueger (1994), que analisa o impacto do aumento do salário mínimo em New Jersey (NJ), comparando com o estado vizinho da Pensilvânia, onde não houve aumento. Em 1º de abril de 1992, NJ aumentou o salário mínimo de US\$ 4,25 para US\$ 5,05 por hora.
+
+A amostra é de 410 restaurantes de *fast food* (Burger King, KFC, Roy Rogers e Wendy's) em NJ e no leste da Pensilvânia, entrevistados em duas rodadas: (1) fevereiro e março de 1992, pouco antes do aumento, e (2) novembro e dezembro de 1992, cerca de oito meses depois.
+
+## Faça uma regressão linear para estimar o efeito causal do aumento do salário mínimo usando o desenho de diferenças em diferenças visto em aula.
+
+Lembre-se da fórmula:
+
+$$
+y = \beta_0 + \beta_1 D + \beta_2 T + \beta_3 (D \times T) + \beta_4 X + \varepsilon
+$$
+
+- $y$ = variável resultado: emprego em tempo integral equivalente (FTE) do restaurante (`emptot`)
+- $D$ = tratamento: restaurante em NJ (1) ou na Pensilvânia (0) (`nj`)
+- $T$ = tempo: antes (0) ou depois (1) do aumento do salário (`postperiod`)
+- $X$ = covariáveis (controles)
+
+# Importando o banco
+
+```{r message = FALSE, warning = FALSE}
+# install.packages(c("haven", "lmtest", "sandwich")) # instale os pacotes caso necessário
+library(haven)
+library(lmtest)   # coeftest()
+library(sandwich) # erros-padrão clusterizados
+
+d <- read_dta("../dados/CK1994_longformat.dta")
+```
+
+# Rodando o modelo 1 (sem controles)
+
+```{r}
+mod <- lm(emptot ~         # Emprego FTE do restaurante
+            nj +           # Restaurante em New Jersey (=1) ou na Pensilvânia (=0)
+            postperiod +   # Antes do aumento do salário (=0) ou depois do aumento (=1)
+            nj:postperiod, # Interação: o estimador de diferenças em diferenças
+          data = d)
+
+summary(mod)
+
+# Cada restaurante aparece duas vezes (antes e depois), então os erros-padrão
+# devem ser clusterizados por restaurante (variável ID)
+coeftest(mod, vcov = vcovCL(mod, cluster = ~ ID))
+```
+
+# Rodando o modelo 2 (com controles)
+
+Como controles, usamos a rede de cada restaurante, uma característica definida antes do aumento do salário. A rede Wendy's é a categoria de referência (incluir as quatro dummies junto com o intercepto geraria colinearidade perfeita).
+
+```{r}
+mod2 <- lm(emptot ~
+             nj +
+             postperiod +
+             nj:postperiod +
+             bk +   # Restaurante da rede Burger King (1) ou não (0)
+             kfc +  # Restaurante da rede KFC (1) ou não (0)
+             roys,  # Restaurante da rede Roy Rogers (1) ou não (0)
+           data = d)
+
+summary(mod2)
+
+coeftest(mod2, vcov = vcovCL(mod2, cluster = ~ ID))
+```
+
+# Respostas
+
+## 1. Qual o tamanho do efeito causal da política de valorização do salário mínimo?
+
+O efeito é dado pelo coeficiente da interação `nj:postperiod`. No modelo sem controles, ele é de cerca de **+2,75**; com os controles de rede, de cerca de **+2,81**. Como a variável dependente é o emprego em tempo integral equivalente (FTE), isso significa que, depois do aumento do salário mínimo, o emprego nos restaurantes de New Jersey **cresceu** cerca de 2,8 empregados FTE por restaurante em relação ao que se esperaria pela tendência dos restaurantes da Pensilvânia.
+
+A tabela 2×2 mostra de onde vem esse número: o emprego médio em NJ passou de cerca de 20,4 para 21,0 (+0,6), enquanto na Pensilvânia caiu de cerca de 23,3 para 21,2 (−2,2). A diferença das diferenças é 0,6 − (−2,2) ≈ 2,75 (ver `aulas/06-diff-in-diff/tabela-did-card-krueger.R`).
+
+## 2. O efeito é estatisticamente significativo ou não? Como você identifica isso?
+
+Olhamos o valor-p (ou o intervalo de confiança) do coeficiente `nj:postperiod`. Com os erros-padrão convencionais do `summary()`, o valor-p é de cerca de 0,10 no modelo 1 e 0,07 no modelo 2: significativo apenas a 10%. Mas esses erros-padrão tratam as duas observações de cada restaurante como independentes. Com erros-padrão **clusterizados por restaurante**, que são os adequados para esse desenho, o valor-p cai para cerca de 0,03 nos dois modelos, e o efeito passa a ser significativo a 5%.
+
+O resultado central, porém, não depende disso: em nenhuma especificação há evidência de que o aumento do salário mínimo tenha **reduzido** o emprego, como previa o modelo competitivo tradicional do mercado de trabalho.
+
+## 3. Qual o valor do ajuste do modelo (R²)? A partir desse valor, você acredita que foi capaz de modelar bem a relação entre a política e o emprego?
+
+O R² é de cerca de 0,007 no modelo sem controles e de cerca de 0,19 no modelo com as dummies de rede. O R² baixo não é um problema para a estimativa do efeito causal: o objetivo do DiD não é explicar toda a variação do emprego entre restaurantes (que depende muito do tamanho e da rede de cada um), e sim estimar de forma não viesada a mudança causada pela política. O que garante a validade do efeito é o pressuposto de tendências paralelas, não o R².
+
+## 4. Se você tivesse que fazer uma recomendação formal a um governo, o que recomendaria?
+
+Os dados não sustentam a preocupação de que um aumento moderado do salário mínimo, como o de New Jersey em 1992, reduza o emprego nos restaurantes de *fast food*. Uma recomendação responsável destacaria que: (i) o resultado vale para esse contexto (um setor, uma região, um aumento de cerca de 19%) e não necessariamente para aumentos muito maiores ou para outros setores; (ii) a validade depende de NJ e Pensilvânia terem tendências paralelas de emprego na ausência da política, o que só poderia ser verificado com mais períodos pré-tratamento; e (iii) vale acompanhar outros resultados, como preços, horas trabalhadas e fechamento de estabelecimentos.
+
+::: {.callout-note}
+**Sobre os controles.** Na versão original deste exercício, o modelo 2 incluía também `wage_st` (salário inicial pago pelo restaurante), `hrsopen` (horas de funcionamento por dia), `pmeal` (preço da refeição) e `closed` (restaurante fechou permanentemente). Essas variáveis foram retiradas porque podem ter sido **afetadas pelo próprio aumento do salário mínimo** (o salário inicial em NJ subiu por causa da lei, por exemplo). Controlar por consequências do tratamento ("*bad controls*") elimina parte do efeito que queremos medir. A dummy `wendys` também foi retirada para evitar a colinearidade perfeita com as demais redes.
+:::

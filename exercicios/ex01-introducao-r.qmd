@@ -1,0 +1,20 @@
+---
+title: "Exercício 1 — Introdução ao R"
+author: "Nome do(a) aluno(a)"
+---
+
+Entrega original: quinta-feira, 17/10/2024. Use o script [`ex01-introducao-r.R`](ex01-introducao-r.R) como ponto de partida.
+
+## Questão 1 — Análise da eficiência de combustível automotivo
+
+Responda às seguintes perguntas usando o conjunto de dados `auto.dta` no R. A variável `mpg` (*miles per gallon*) mede o rendimento do carro, em milhas por galão.
+
+a) Resuma as variáveis de preço, rendimento (mpg) e peso.
+
+b) Liste as cinco primeiras observações para as variáveis: marca, preço, rendimento, peso e origem (estrangeiro/doméstico).
+
+c) Quantas observações existem no total? Quantas são de carros domésticos e quantas de carros estrangeiros?
+
+d) Produza um gráfico de dispersão com rendimento (mpg) no eixo Y e peso no eixo X. Descreva a relação apresentada.
+
+e) Repita o gráfico de dispersão, mas desta vez apenas para carros estrangeiros.

@@ -1,0 +1,25 @@
+---
+title: "Avaliação de Impacto de Políticas Públicas"
+subtitle: "Material didático em R e Quarto — Gestão Pública, UFMG (2024/2)"
+number-sections: false
+toc: false
+---
+
+Este site reúne as aulas práticas, os exercícios e as soluções que preparei para a disciplina de **Avaliação de Políticas Públicas (AVPP)** do curso de Gestão Pública da UFMG, no segundo semestre de 2024. O curso combina os fundamentos de inferência causal com a aplicação dos principais desenhos de avaliação de impacto em R.
+
+## Conteúdo
+
+| # | Aula | Método / tema | Exercício |
+|---|------|---------------|-----------|
+| 1 | [Introdução ao R](aulas/01-introducao-r/aula01-introducao-r.qmd) | Objetos, vetores, operadores, pacotes | Ex. 1 ([enunciado](exercicios/ex01-introducao-r.qmd), [solução](solucoes/ex01-introducao-r-solucao.qmd)) |
+| 2 | [Regressão linear simples](aulas/02-regressao-simples/aula02-regressao-simples.qmd) | Endogeneidade, quarteto de Anscombe | Ex. 2 ([enunciado](exercicios/ex02-revisao-regressao.qmd), [solução](solucoes/ex02-revisao-regressao-solucao.qmd)) |
+| 3 | [Regressão por MQO](aulas/03-regressao-mqo/aula03-regressao-mqo.qmd) | Pressupostos e diagnóstico ([resumo](aulas/03-regressao-mqo/resumo-regressao.qmd)) | Ex. 3 ([enunciado](exercicios/ex03-testes-hipotese.qmd), [solução](solucoes/ex03-testes-hipotese-solucao.qmd)) |
+| 4 | [Experimentos](aulas/04-experimentos/aula04-experimento-raca-curriculo.qmd) | Experimento de campo (Bertrand & Mullainathan) | Ex. 4 ([solução](solucoes/ex04-experimento-casamento-solucao.qmd)) |
+| 5 | [Propensity score](aulas/05-propensity-score/aula05-propensity-score.qmd) | Regressão com escore, IPW, pareamento | Ex. 5 ([enunciado](exercicios/ex05-propensity-score.qmd), [solução](solucoes/ex05-propensity-score-solucao.qmd)) |
+| 6 | [Diferenças em Diferenças](aulas/06-diff-in-diff/aula06-diff-in-diff.qmd) | Tendências paralelas (simulação) | Ex. 6 ([enunciado](exercicios/ex06-diff-in-diff.qmd), [solução](solucoes/ex06-diff-in-diff-solucao.qmd)) |
+| 7 | [Regressão com Descontinuidade](aulas/07-rdd/aula07-rdd.qmd) | RDD *sharp*, polinômios, `rdrobust` | Ex. 7 ([enunciado](exercicios/ex07-rdd.qmd)) |
+| 8 | [Dados em painel](aulas/08-painel/aula08-painel.qmd) | Primeiras diferenças, efeitos fixos e aleatórios, Hausman | — |
+| 9 | [Custo-efetividade](aulas/09-custo-efetividade/aula09-custo-efetividade.qmd) | Custo por beneficiário e custo-efetividade | — |
+| 10 | [Qual método usar?](aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.qmd) | Estudos de caso | Revisão final ([enunciado](exercicios/ex08-revisao-final.qmd), [solução](solucoes/ex08-revisao-final-solucao.qmd)) |
+
+O código-fonte, os dados e os slides em PDF estão no [repositório do GitHub](https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas).

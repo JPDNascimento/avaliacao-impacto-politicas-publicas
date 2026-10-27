@@ -1,0 +1,98 @@
+---
+title: "Exercício 3 — Regressão e testes de hipótese"
+author: "Nome do(a) aluno(a)"
+---
+
+Entrega original: 07/11/2024.
+
+------------------------------------------------------------------------
+
+**Questão 1) Persico, Postlewaite e Silverman (2004) analisaram dados da National Longitudinal Survey of Youth (NLSY) da coorte de 1979 para avaliar a relação entre altura e salários de homens brancos. Aqui, exploramos a relação entre altura e salários para a amostra completa, que inclui homens e mulheres de todas as raças. O NLSY é uma amostra nacionalmente representativa de 12.686 jovens homens e mulheres que tinham entre 14 e 22 anos quando foram entrevistados pela primeira vez em 1979. Esses indivíduos foram entrevistados anualmente até 1994 e bianualmente desde então. A Tabela 4.7 descreve as variáveis do arquivo `heightwage.dta` que utilizaremos nesta questão.**
+
+```{r, warning=FALSE, message=FALSE}
+library(rio) 
+heightwage <- import(file = "../dados/heightwage.dta")
+```
+
+**Tabela 4.7: Variáveis para os Dados de Altura e Salário nos Estados Unidos**
+
+| Nome da Variável | Descrição                                           |
+|------------------|-----------------------------------------------------|
+| wage96           | Salários por hora (em dólares) em 1996              |
+| height85         | Altura adulta: altura (em polegadas) medida em 1985 |
+
+------------------------------------------------------------------------
+
+**a. Crie um gráfico de dispersão dos salários adultos em relação à altura adulta. O que esse gráfico sugere sobre a relação entre altura e salários?**
+
+```{r, warning=FALSE, message=FALSE}
+# Crie abaixo o gráfico com ggplot2, caso não tenha ainda, instale o pacote com install.packages()
+
+library(ggplot2) 
+
+
+```
+
+------------------------------------------------------------------------
+
+**b. Estime uma regressão OLS em que o salário adulto é a variável dependente e a altura adulta é a variável explicativa para todos os respondentes. Relate a equação da regressão estimada e interprete os resultados, explicando em particular o que o valor-p significa.**
+
+```{r, warning=FALSE, message=FALSE}
+# Use esse espaço para gerar o modelo de regressão
+```
+
+**Resposta:**
+
+------------------------------------------------------------------------
+
+**Questão 2) Os eleitores se preocupam com a economia, muitas vezes mais do que com qualquer outro tema. Não é surpresa, então, que os políticos invariavelmente argumentem que seu partido é o melhor para a economia. Quem está certo? Neste exercício, vamos olhar para os dados econômicos e do partido presidencial nos EUA contidos no arquivo `PresPartyEconGrowth.dta` para testar se há alguma diferença no desempenho econômico entre presidentes republicanos e democratas. Usaremos duas variáveis dependentes diferentes:**
+
+-   `ChangeGDPpc`: *mudança no PIB real per capita em cada ano de 1962 a 2013 (em dólares ajustados pela inflação, disponíveis no Banco Mundial)*.
+
+-   `Unemployment`: *taxa de desemprego em cada ano de 1947 a 2013 (disponível no Bureau of Labor Statistics)*.
+
+**Nossa variável independente é `LagDemPresident`. Esta variável é igual a 1 se o presidente do ano anterior era democrata e igual a 0 se o presidente do ano anterior era republicano. A ideia é que as políticas do presidente levam algum tempo para surtir efeito, de modo que o crescimento econômico em um determinado ano depende de quem foi o presidente no ano anterior.**
+
+------------------------------------------------------------------------
+
+```{r, warning=FALSE, message=FALSE}
+# importando a base de dados e checando o nome das colunas
+PresPartyEconGrowth <- import(file = "../dados/PresPartyEconGrowth.dta") 
+names(PresPartyEconGrowth)
+```
+
+------------------------------------------------------------------------
+
+**a. Estime um modelo com a taxa de desemprego como variável dependente e `LagDemPresident` como variável independente. Interprete os coeficientes.**
+
+```{r, warning=FALSE, message=FALSE}
+# Use esse espaço para gerar o modelo de regressão
+
+```
+
+**Resposta:**
+
+------------------------------------------------------------------------
+
+**b. Estime um modelo com o PIB per capita como variável dependente e `LagDemPresident` como variável independente. Interprete os coeficientes. Explique por que o tamanho da amostra difere do primeiro modelo.**
+
+```{r, warning=FALSE, message=FALSE}
+# Use esse espaço para gerar o modelo de regressão
+
+```
+
+***Resposta:***
+
+------------------------------------------------------------------------
+
+**c. Escolha um nível de significância e uma hipótese alternativa e indique, para cada modelo acima, se você rejeita ou não a hipótese nula.**
+
+**Resposta:**
+
+------------------------------------------------------------------------
+
+**d. Explique com suas próprias palavras o que o valor-p significa para a variável `LagDemPresident` em cada modelo.**
+
+**Resposta:**
+
+------------------------------------------------------------------------

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="João Paulo Dellasta">
+
+<title>Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução) – Avaliação de Impacto de Políticas Públicas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-4d3f3448f837ff03356db176d8adb603.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+<link href="../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Avaliação de Impacto de Políticas Públicas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Procurar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alternar de navegação" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Início</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-aulas" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Aulas</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-aulas">    
+        <li>
+    <a class="dropdown-item" href="../aulas/01-introducao-r/aula01-introducao-r.html">
+ <span class="dropdown-text">Aula 1 — Operações básicas em R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/02-regressao-simples/aula02-regressao-simples.html">
+ <span class="dropdown-text">Aula 2 — Regressão linear simples</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/03-regressao-mqo/aula03-regressao-mqo.html">
+ <span class="dropdown-text">Aula 3 — Regressão por MQO e seus pressupostos</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/03-regressao-mqo/resumo-regressao.html">
+ <span class="dropdown-text">Resumo — Regressão linear por Mínimos Quadrados Ordinários</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/04-experimentos/aula04-experimento-raca-curriculo.html">
+ <span class="dropdown-text">Aula 4 — Experimentos: raça importa para conseguir uma entrevista de emprego?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/05-propensity-score/aula05-propensity-score.html">
+ <span class="dropdown-text">Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/06-diff-in-diff/aula06-diff-in-diff.html">
+ <span class="dropdown-text">Aula 6 — Diferenças em Diferenças</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/07-rdd/aula07-rdd.html">
+ <span class="dropdown-text">Aula 7 — Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/08-painel/aula08-painel.html">
+ <span class="dropdown-text">Aula 8 — Dados em painel: primeiras diferenças, efeitos fixos e aleatórios</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/09-custo-efetividade/aula09-custo-efetividade.html">
+ <span class="dropdown-text">Aula 9 — Custo por beneficiário e custo-efetividade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.html">
+ <span class="dropdown-text">Aula 10 — Resolução de problemas em gestão pública: qual método usar?</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercícios" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Exercícios</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-exercícios">    
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex01-introducao-r.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex02-revisao-regressao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex03-testes-hipotese.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex05-propensity-score.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex06-diff-in-diff.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (Card &amp; Krueger, 1994)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex07-rdd.html">
+ <span class="dropdown-text">Exercício 7 — Avaliando o HISP com Regressão com Descontinuidade</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../exercicios/ex08-revisao-final.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-soluções" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Soluções</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-soluções">    
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex01-introducao-r-solucao.html">
+ <span class="dropdown-text">Exercício 1 — Introdução ao R (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex02-revisao-regressao-solucao.html">
+ <span class="dropdown-text">Exercício 2 — Questões de revisão: regressão linear (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex03-testes-hipotese-solucao.html">
+ <span class="dropdown-text">Exercício 3 — Regressão e testes de hipótese (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex04-experimento-casamento-solucao.html">
+ <span class="dropdown-text">Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex05-propensity-score-solucao.html">
+ <span class="dropdown-text">Exercício 5 — Avaliando o HISP com propensity score (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex06-diff-in-diff-solucao.html">
+ <span class="dropdown-text">Exercício 6 — Diferenças em Diferenças: salário mínimo e emprego (solução)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../solucoes/ex08-revisao-final-solucao.html">
+ <span class="dropdown-text">Exercício de revisão — DiD, RDD e propensity score (solução)</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Sumário</h2>
+   
+  <ul>
+  <li><a href="#importando-o-banco-de-dados" id="toc-importando-o-banco-de-dados" class="nav-link active" data-scroll-target="#importando-o-banco-de-dados"><span class="header-section-number">1</span> Importando o banco de dados</a>
+  <ul class="collapse">
+  <li><a href="#pergunta-1" id="toc-pergunta-1" class="nav-link" data-scroll-target="#pergunta-1"><span class="header-section-number">1.1</span> Pergunta 1</a></li>
+  <li><a href="#resposta-1" id="toc-resposta-1" class="nav-link" data-scroll-target="#resposta-1"><span class="header-section-number">1.2</span> Resposta 1</a></li>
+  <li><a href="#pergunta-2" id="toc-pergunta-2" class="nav-link" data-scroll-target="#pergunta-2"><span class="header-section-number">1.3</span> Pergunta 2</a></li>
+  <li><a href="#resposta-2" id="toc-resposta-2" class="nav-link" data-scroll-target="#resposta-2"><span class="header-section-number">1.4</span> Resposta 2</a></li>
+  <li><a href="#pergunta-3" id="toc-pergunta-3" class="nav-link" data-scroll-target="#pergunta-3"><span class="header-section-number">1.5</span> Pergunta 3</a></li>
+  <li><a href="#resposta-3" id="toc-resposta-3" class="nav-link" data-scroll-target="#resposta-3"><span class="header-section-number">1.6</span> Resposta 3</a></li>
+  <li><a href="#pergunta-4" id="toc-pergunta-4" class="nav-link" data-scroll-target="#pergunta-4"><span class="header-section-number">1.7</span> Pergunta 4</a></li>
+  <li><a href="#resposta-4" id="toc-resposta-4" class="nav-link" data-scroll-target="#resposta-4"><span class="header-section-number">1.8</span> Resposta 4</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/solucoes/ex04-experimento-casamento-solucao.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exercício 4 — Experimento: contato e apoio ao casamento entre pessoas do mesmo sexo (solução)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>João Paulo Dellasta </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Neste exercício, analisamos os dados de dois experimentos em que famílias foram contactadas por uma campanha em apoio ao casamento gay nos EUA. Os dados são os do estudo original de LaCour e Green (2014), que foi <strong>retratado</strong> pela revista <em>Science</em> em 2015 depois que se descobriu que os dados haviam sido fabricados; o exercício é adaptado de Imai, <em>Quantitative Social Science</em> (cap. 2), e continua útil para praticar a análise de experimentos, mas os resultados não devem ser lidos como evidência real. Os panfleteiros receberam um roteiro que conduzia a conversa da campanha, que duravam em média cerca de vinte minutos.</p>
+<p>Uma característica distintiva deste estudo é que panfleteiros homossexuais e heterossexuais foram atribuídos aleatoriamente às famílias, sendo que os panfleteiros revelaram se eles eram heterossexuais ou gay no decorrer da conversa.</p>
+<p>O experimento visa testar a ‘hipótese de contato’, que sustenta que a hostilidade a grupos externos (em relação aos gays, neste caso) diminui quando pessoas de grupos diferentes interagem umas com as outras. Os dados estão disponíveis no arquivo ‘gay.csv’, que é um arquivo CSV. A Tabela 2.7 do livro de Imai apresenta os nomes e descrições das variáveis neste banco de dados. Cada observação deste conjunto de dados é um respondente que respondeu sobre o apoio ao casamento gay numa escala de 5 pontos. São dois estudos diferentes neste conjunto de dados, envolvendo entrevistas durante sete rodadas diferentes (ou seja, sete ondas). Em ambos os estudos, a primeira onda consiste na entrevista antes que o tratamento da campanha ocorresse.</p>
+<hr>
+<p><strong>Nome das variávies e descrição</strong></p>
+<hr>
+<p><code>study</code> Fonte do dado (1 = Study1, 2 = Study2)</p>
+<p><code>treatment</code> 5 condições: um grupo de controle (sem contato) e 4 tratamentos</p>
+<p><code>wave</code> Rodadas (do total de 7)</p>
+<p><code>ssm</code> Apoio ao casamento gay (escala de 5 pontos, em que mais é apoio)</p>
+<hr>
+<p><strong>Tratamentos</strong></p>
+<pre><code>No Contact                                      Pergunta sobre o casamento gay sem panfletagem 
+
+Recycling Script by Gay Canvasser               Pergunta sobre reciclagem por um aplicador gay 
+
+Same-Sex Marriage Script by Gay Canvasser       Pergunta sobre casamento gay por um aplicador gay
+
+Recycling Script by Straight Canvasser          Pergunta sobre reciclagem por um hétero
+
+Same-Sex Marriage Script by Straight Canvasser  Pergunta sobre casamento gay por um hétero</code></pre>
+<section id="importando-o-banco-de-dados" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Importando o banco de dados</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>gay <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../dados/gay.csv"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gay)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["study"],"name":[1],"type":["int"],"align":["right"]},{"label":["treatment"],"name":[2],"type":["chr"],"align":["left"]},{"label":["wave"],"name":[3],"type":["int"],"align":["right"]},{"label":["ssm"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"No Contact","3":"3","4":"5","_rn_":"1"},{"1":"1","2":"No Contact","3":"4","4":"5","_rn_":"2"},{"1":"1","2":"No Contact","3":"1","4":"5","_rn_":"3"},{"1":"1","2":"No Contact","3":"6","4":"5","_rn_":"4"},{"1":"1","2":"No Contact","3":"2","4":"5","_rn_":"5"},{"1":"1","2":"No Contact","3":"7","4":"5","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<section id="pergunta-1" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="pergunta-1"><span class="header-section-number">1.1</span> Pergunta 1</h2>
+<p>Usando a primeira onda de entrevistas realizada antes de o tratamento ser administrado, examine se a randomização foi conduzida adequadamente. Baseie sua análise nos três grupos do estudo 1: “panfleteiro gay com o roteiro sobre o casamento gay,” “panfleteiro hétero com roteiro sobre o casamento gay” e “grupo de controle - sem contato”. Comente brevemente sobre os resultados.</p>
+</section>
+<section id="resposta-1" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="resposta-1"><span class="header-section-number">1.2</span> Resposta 1</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Wave 1; Study 1</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrar os dados para a primeira onda e o estudo 1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>w1_gay <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Same-Sex Marriage Script by Gay Canvasser"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>w1_straight <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Same-Sex Marriage Script by Straight Canvasser"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>w1_none <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"No Contact"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular a média de apoio ao casamento gay para o grupo com panfleteiros gays</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w1_gay<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.025195</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular a média de apoio ao casamento gay para o grupo com panfleteiros heterossexuais</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w1_straight<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.09971</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular a média de apoio ao casamento gay para o grupo sem contato</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w1_none<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.042764</code></pre>
+</div>
+</div>
+<p>Os resultados mostram que, antes do tratamento, os três grupos têm níveis médios de apoio ao casamento gay semelhantes (em torno de 3,0 a 3,1 na escala de 5 pontos), o que é consistente com uma randomização bem feita. O grupo do panfleteiro hétero começa um pouco acima (cerca de 0,06 ponto acima do controle); diferenças pequenas como essa podem ocorrer por acaso, mas convém lembrá-las ao interpretar os efeitos (uma alternativa é comparar a <em>mudança</em> em relação à onda 1). Para checar formalmente, poderíamos usar testes de diferença de médias, como <code>t.test(w1_straight$ssm, w1_none$ssm)</code>.</p>
+<hr>
+</section>
+<section id="pergunta-2" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="pergunta-2"><span class="header-section-number">1.3</span> Pergunta 2</h2>
+<p>A segunda onda da pesquisa foi implementada 3 meses após a campanha. Usando o estudo 1, estime os efeitos médios do tratamento de panfleteiros gays e heterossexuais sobre o apoio ao casamento entre pessoas do mesmo sexo, separadamente. Dê uma breve interpretação dos resultados.</p>
+</section>
+<section id="resposta-2" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="resposta-2"><span class="header-section-number">1.4</span> Resposta 2</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Wave 2; Study 1</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrar os dados para a segunda onda (wave == 2) e o estudo 1 (study == 1)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Separar os dados de acordo com o tipo de tratamento (panfleteiro gay, panfleteiro heterossexual e grupo sem contato)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Dados para panfleteiros gays</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>w2_gay <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Same-Sex Marriage Script by Gay Canvasser"</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Dados para panfleteiros heterossexuais</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>w2_straight <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Same-Sex Marriage Script by Straight Canvasser"</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Dados para o grupo sem contato</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>w2_none <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"No Contact"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular a média de apoio ao casamento gay para cada grupo (panfleteiros gays e grupo sem contato)</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># E calcular a diferença entre eles (ATE para panfleteiros gays)</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w2_gay<span class="sc">$</span>ssm) <span class="sc">-</span> <span class="fu">mean</span>(w2_none<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.09987463</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular a média de apoio ao casamento gay para cada grupo (panfleteiros heterossexuais e grupo sem contato)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># E calcular a diferença entre eles (ATE para panfleteiros heterossexuais)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w2_straight<span class="sc">$</span>ssm) <span class="sc">-</span> <span class="fu">mean</span>(w2_none<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.122248</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Testes de diferença de médias</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(w2_gay<span class="sc">$</span>ssm, w2_none<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  w2_gay$ssm and w2_none$ssm
+t = 1.7714, df = 1480.6, p-value = 0.07669
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.01071947  0.21046874
+sample estimates:
+mean of x mean of y 
+ 3.139489  3.039615 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(w2_straight<span class="sc">$</span>ssm, w2_none<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  w2_straight$ssm and w2_none$ssm
+t = 2.0618, df = 1263.6, p-value = 0.03943
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 0.005925209 0.238570724
+sample estimates:
+mean of x mean of y 
+ 3.161863  3.039615 </code></pre>
+</div>
+</div>
+<p>Na segunda onda do estudo 1, o apoio ao casamento gay foi, em média, 0,10 ponto maior no grupo visitado por panfleteiros gays e 0,12 ponto maior no grupo visitado por panfleteiros heterossexuais, em comparação com o grupo sem contato. Os testes t mostram que a diferença para os panfleteiros heterossexuais é significativa a 5% (p ≈ 0,04), enquanto a dos panfleteiros gays é significativa apenas a 10% (p ≈ 0,08). Lembre também que, na onda 1, o grupo dos panfleteiros heterossexuais já começava um pouco acima do controle.</p>
+<hr>
+</section>
+<section id="pergunta-3" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="pergunta-3"><span class="header-section-number">1.5</span> Pergunta 3</h2>
+<p>O estudo continha outro tratamento que envolvia contato, mas não envolvia o uso do script do casamento gay. Especificamente, os autores usaram um script para encorajar as pessoas a reciclar. Qual é o objetivo deste tratamento? Usando estudo 1 e onda 2, compare os resultados do tratamento “panfleteiro gay com o roteiro sobre o casamento gay” com “panfleteiro gay com o roteiro sobre reciclagem”. Repita a comparação para os panfleteiros heterossexuais.epita o mesmo para panlfeteiros heterossexuais, comparando o tratamento “panfleteiro hetero com o roteiro sobre o casamento gay” com “panfleteiro hétero com o roteiro sobre reciclagem”. O que estas comparações revelam? Dê uma interpretação substantiva dos resultados.</p>
+</section>
+<section id="resposta-3" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="resposta-3"><span class="header-section-number">1.6</span> Resposta 3</h2>
+<p>Este tratamento aborda a possibilidade de que simplesmente entrar em contato com alguém pode fazer com que eles ajam de maneira diferente. Isto é potencialmente uma preocupação porque, ao fazer campanha, dois panfleteiros estão entrando em contato com alguém e também entregando um script. Para descartar a possibilidade de que o contato por si só impulsione mudanças de opinião sobre o casamento gay, os pesquisadores criaram um grupo que recebe contato com um script não relacionado ao casamento gay (reciclagem). Comparar o script do casamento gay com o de reciclagem, para o mesmo tipo de panfleteiro, isola o efeito do <strong>conteúdo</strong> da conversa, mantendo constante o efeito do contato.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nova linha de base para panfleteiros gays usando o script de reciclagem</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>w2_gay_recycling <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Recycling Script by Gay Canvasser"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ATE para panfleteiros gays, comparando o roteiro do casamento gay com o roteiro de reciclagem</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w2_gay<span class="sc">$</span>ssm) <span class="sc">-</span> <span class="fu">mean</span>(w2_gay_recycling<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.03204239</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nova linha de base para panfleteiros heterossexuais usando o script de reciclagem</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>w2_straight_recycling <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, wave <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Recycling Script by Straight Canvasser"</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ATE para panfleteiros heterossexuais, comparando o roteiro do casamento gay com o roteiro de reciclagem</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(w2_straight<span class="sc">$</span>ssm) <span class="sc">-</span> <span class="fu">mean</span>(w2_straight_recycling<span class="sc">$</span>ssm)</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1575845</code></pre>
+</div>
+</div>
+<p>A análise mostra que, seja entregue por panfleteiros homossexuais ou heterossexuais, o roteiro do casamento gay produz apoio maior do que o script de reciclagem na onda 2 (cerca de 0,03 ponto para panfleteiros gays e 0,16 para heterossexuais).</p>
+<p>Mas atenção às diferenças que já existiam <strong>antes</strong> do tratamento. Na onda 1, o grupo “hétero + casamento gay” já estava acima do grupo “hétero + reciclagem”, e o grupo “gay + casamento gay” estava abaixo do grupo “gay + reciclagem”. Comparando a <strong>mudança</strong> entre as ondas 1 e 2 (uma diferença em diferenças), a conclusão se inverte:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>media_onda <span class="ot">&lt;-</span> <span class="cf">function</span>(trat, onda) <span class="fu">mean</span>(gay<span class="sc">$</span>ssm[gay<span class="sc">$</span>study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> gay<span class="sc">$</span>wave <span class="sc">==</span> onda <span class="sc">&amp;</span> gay<span class="sc">$</span>treatment <span class="sc">==</span> trat])</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Panfleteiros gays: (casamento − reciclagem) na onda 2 menos a mesma diferença na onda 1</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>(<span class="fu">media_onda</span>(<span class="st">"Same-Sex Marriage Script by Gay Canvasser"</span>, <span class="dv">2</span>) <span class="sc">-</span> <span class="fu">media_onda</span>(<span class="st">"Recycling Script by Gay Canvasser"</span>, <span class="dv">2</span>)) <span class="sc">-</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  (<span class="fu">media_onda</span>(<span class="st">"Same-Sex Marriage Script by Gay Canvasser"</span>, <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">media_onda</span>(<span class="st">"Recycling Script by Gay Canvasser"</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.137822</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Panfleteiros heterossexuais</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>(<span class="fu">media_onda</span>(<span class="st">"Same-Sex Marriage Script by Straight Canvasser"</span>, <span class="dv">2</span>) <span class="sc">-</span> <span class="fu">media_onda</span>(<span class="st">"Recycling Script by Straight Canvasser"</span>, <span class="dv">2</span>)) <span class="sc">-</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  (<span class="fu">media_onda</span>(<span class="st">"Same-Sex Marriage Script by Straight Canvasser"</span>, <span class="dv">1</span>) <span class="sc">-</span> <span class="fu">media_onda</span>(<span class="st">"Recycling Script by Straight Canvasser"</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.07134936</code></pre>
+</div>
+</div>
+<p>Levando em conta o ponto de partida de cada grupo, o efeito do roteiro é maior para os panfleteiros gays (cerca de 0,14) do que para os heterossexuais (cerca de 0,07). A lição: mesmo em experimentos, pequenas diferenças pré-tratamento podem mudar a leitura de comparações entre subgrupos.</p>
+<hr>
+</section>
+<section id="pergunta-4" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="pergunta-4"><span class="header-section-number">1.7</span> Pergunta 4</h2>
+<p>No estudo 1, os autores entrevistaram os entrevistados seis vezes diferentes (em ondas 2 a 7) após o tratamento, em intervalos de dois meses. A última entrevista, em onda 7, ocorre um ano após o tratamento. Os efeitos da campanha duram? E se duram, em que condições? Responda a essas perguntas calculando separadamente os efeitos médios de panfleteiros heterossexuais e gays com o roteiro sobre casamento do mesmo sexo para cada uma das ondas subsequentes (em relação à condição de controle).</p>
+</section>
+<section id="resposta-4" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="resposta-4"><span class="header-section-number">1.8</span> Resposta 4</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrar os dados para os grupos de panfleteiros gays e heterossexuais, além do grupo sem contato, no estudo 1</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>s1_gay <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Same-Sex Marriage Script by Gay Canvasser"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>s1_straight <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"Same-Sex Marriage Script by Straight Canvasser"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>s1_none <span class="ot">&lt;-</span> <span class="fu">subset</span>(gay, study <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> treatment <span class="sc">==</span> <span class="st">"No Contact"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular a média de apoio ao casamento gay para o grupo sem contato em cada onda</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>s1_baseline <span class="ot">&lt;-</span> <span class="fu">tapply</span>(s1_none<span class="sc">$</span>ssm, s1_none<span class="sc">$</span>wave, mean)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular os efeitos médios do tratamento (ATEs) para os panfleteiros gays em cada onda</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>gay_c <span class="ot">&lt;-</span> <span class="fu">tapply</span>(s1_gay<span class="sc">$</span>ssm, s1_gay<span class="sc">$</span>wave, mean) <span class="sc">-</span> s1_baseline</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular os efeitos médios do tratamento (ATEs) para os panfleteiros heterossexuais em cada onda</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>straight_c <span class="ot">&lt;-</span> <span class="fu">tapply</span>(s1_straight<span class="sc">$</span>ssm, s1_straight<span class="sc">$</span>wave, mean) <span class="sc">-</span> s1_baseline</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Juntando em um banco de dados</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>onda <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Onda 1"</span>, <span class="st">"Onda 2"</span>, <span class="st">"Onda 3"</span>, <span class="st">"Onda 4"</span>, <span class="st">"Onda 5"</span>, <span class="st">"Onda 6"</span>, <span class="st">"Onda 7"</span>)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>bd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(gay_c,straight_c, onda)</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotando para conferir</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>bd <span class="sc">|&gt;</span> </span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> onda)) <span class="sc">+</span></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> gay_c, <span class="at">color =</span> <span class="st">"Gay Canvas"</span>, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> straight_c, <span class="at">color =</span> <span class="st">"Straight Canvas"</span>, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"blue"</span>)) <span class="sc">+</span></span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Tratamento"</span>, <span class="at">y =</span> <span class="st">"ATE"</span>, <span class="at">x =</span> <span class="st">"Onda"</span>) <span class="sc">+</span></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ex04-experimento-casamento-solucao_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Os efeitos parecem durar algum tempo. Para os panfleteiros gays, a diferença em relação ao controle se mantém positiva em todas as ondas pós-tratamento (de cerca de 0,10 na onda 2 a 0,06 na onda 7), partindo de um grupo que começou levemente abaixo do controle na onda 1 (−0,02). Para os panfleteiros heterossexuais, o efeito cai já na onda 3 (cerca de 0,06) e desaparece na onda 7 (−0,04), e esse grupo começou acima do controle (+0,06), o que sugere que parte da diferença inicial nem era efeito da campanha. Ou seja, o efeito parece mais persistente quando o panfleteiro é gay, coerente com a hipótese de contato.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/blob/main/solucoes/ex04-experimento-casamento-solucao.qmd" class="toc-action"><i class="bi bi-github"></i>Ver o código fonte</a></li><li><a href="https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas/issues/new" class="toc-action"><i class="bi empty"></i>Criar uma issue</a></li></ul></div></div></div></footer></body></html>

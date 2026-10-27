@@ -1,0 +1,79 @@
+---
+title: "Aula 4 — Experimentos: raça importa para conseguir uma entrevista de emprego?"
+author: "João Paulo Dellasta"
+---
+
+📑 [Slides da aula (PDF)](slides-experimentos.pdf)
+
+```{r}
+library(tidyverse)
+```
+
+# Desenho da pesquisa
+
+Este exemplo reproduz o experimento de campo de Bertrand e Mullainathan (2004), também usado como exemplo em Imai, *Quantitative Social Science* (cap. 2).
+
+**Pergunta de pesquisa:** raça importa para conseguir uma entrevista de emprego?
+
+**Manipulação da variável raça:** os pesquisadores enviaram currículos fictícios idênticos em tudo, menos no nome do candidato, sorteado aleatoriamente entre nomes associados a pessoas negras (como Lakisha Washington ou Jamal Jones) e a pessoas brancas (como Emily Walsh ou Greg Baker).
+
+**Implicação empírica:** se não houver discriminação, a taxa de retorno (convites para entrevista) deve ser igual nos dois grupos. Como o nome foi atribuído aleatoriamente, a diferença entre as taxas estima o efeito causal do nome percebido como negro.
+
+# Montando a tabela de resultados
+
+Os números abaixo são os totais agregados do estudo: 2.435 currículos por grupo.
+
+```{r}
+resume <- data.frame(
+  Tratamento = c("black", "white"),
+  Dispensado = c(2278, 2200),
+  Chamado    = c(157, 235)
+)
+
+resume$Total <- resume$Dispensado + resume$Chamado
+
+resume
+```
+
+# Calculando o percentual de retorno
+
+```{r}
+resume$taxa_retorno <- resume$Chamado / resume$Total * 100
+
+resume
+```
+
+# Visualizando a diferença
+
+```{r}
+ggplot(resume, aes(x = Tratamento, y = taxa_retorno, fill = Tratamento)) +
+  geom_col() +
+  scale_fill_manual(values = c("black" = "black", "white" = "gray")) +
+  scale_x_discrete(labels = c("black" = "Nome associado a pessoas negras",
+                              "white" = "Nome associado a pessoas brancas")) +
+  labs(y = "Taxa de retorno (%)", x = NULL, fill = "Tratamento") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+# Calculando a diferença e testando sua significância
+
+```{r}
+# Diferença em pontos percentuais (calculada antes de arredondar)
+diferenca <- resume$taxa_retorno[resume$Tratamento == "white"] -
+             resume$taxa_retorno[resume$Tratamento == "black"]
+round(diferenca, 2)
+
+# Teste de diferença de proporções
+prop.test(x = resume$Chamado, n = resume$Total)
+```
+
+A taxa de retorno para os currículos com nomes associados a pessoas negras (6,45%) é cerca de **3,2 pontos percentuais** mais baixa do que para os currículos com nomes associados a pessoas brancas (9,65%). Em termos relativos, os candidatos brancos receberam cerca de 50% mais convites. O teste de proporções mostra que essa diferença é estatisticamente significativa.
+
+Como o nome foi a única característica alterada e foi atribuído aleatoriamente, podemos interpretar a diferença como o efeito causal do nome: o mesmo currículo tem uma probabilidade substancialmente menor de receber retorno quando o nome é associado a uma pessoa negra.
+
+## Referências
+
+Bertrand, M.; Mullainathan, S. (2004). Are Emily and Greg More Employable Than Lakisha and Jamal? A Field Experiment on Labor Market Discrimination. *American Economic Review*, 94(4), 991–1013.
+
+Imai, K. (2017). *Quantitative Social Science: An Introduction*. Princeton University Press.

@@ -1,0 +1,75 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - "aulas/**/*.pdf"
+    - "aulas/**/*.R"
+    - "exercicios/*.R"
+  render:
+    - index.qmd
+    - aulas/**/*.qmd
+    - exercicios/*.qmd
+    - solucoes/*.qmd
+
+website:
+  title: "Avaliação de Impacto de Políticas Públicas"
+  description: "Material didático em R e Quarto: experimentos, propensity score, diferenças em diferenças, RDD e dados em painel."
+  repo-url: https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas
+  repo-actions: [source, issue]
+  page-navigation: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Início
+      - text: Aulas
+        menu:
+          - aulas/01-introducao-r/aula01-introducao-r.qmd
+          - aulas/02-regressao-simples/aula02-regressao-simples.qmd
+          - aulas/03-regressao-mqo/aula03-regressao-mqo.qmd
+          - aulas/03-regressao-mqo/resumo-regressao.qmd
+          - aulas/04-experimentos/aula04-experimento-raca-curriculo.qmd
+          - aulas/05-propensity-score/aula05-propensity-score.qmd
+          - aulas/06-diff-in-diff/aula06-diff-in-diff.qmd
+          - aulas/07-rdd/aula07-rdd.qmd
+          - aulas/08-painel/aula08-painel.qmd
+          - aulas/09-custo-efetividade/aula09-custo-efetividade.qmd
+          - aulas/10-escolha-do-metodo/aula10-escolha-do-metodo.qmd
+      - text: Exercícios
+        menu:
+          - exercicios/ex01-introducao-r.qmd
+          - exercicios/ex02-revisao-regressao.qmd
+          - exercicios/ex03-testes-hipotese.qmd
+          - exercicios/ex05-propensity-score.qmd
+          - exercicios/ex06-diff-in-diff.qmd
+          - exercicios/ex07-rdd.qmd
+          - exercicios/ex08-revisao-final.qmd
+      - text: Soluções
+        menu:
+          - solucoes/ex01-introducao-r-solucao.qmd
+          - solucoes/ex02-revisao-regressao-solucao.qmd
+          - solucoes/ex03-testes-hipotese-solucao.qmd
+          - solucoes/ex04-experimento-casamento-solucao.qmd
+          - solucoes/ex05-propensity-score-solucao.qmd
+          - solucoes/ex06-diff-in-diff-solucao.qmd
+          - solucoes/ex08-revisao-final-solucao.qmd
+    right:
+      - icon: github
+        href: https://github.com/JPDNascimento/avaliacao-impacto-politicas-publicas
+
+lang: pt-BR
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-location: left
+    toc-title: Sumário
+    number-sections: true
+    code-copy: true
+    code-overflow: wrap
+    df-print: paged
+
+execute:
+  freeze: auto
+  warning: false
+  message: false

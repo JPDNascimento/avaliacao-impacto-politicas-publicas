@@ -1,0 +1,335 @@
+---
+title: "Aula 5 — Propensity score: regressão, ponderação (IPW) e pareamento"
+author: "João Paulo Dellasta"
+---
+
+::: {.callout-note}
+Este exemplo é uma tradução e adaptação do material de Andrew Heiss (*Program Evaluation for Public Service*, exemplo "Matching and inverse probability weighting"), que também criou os dados simulados `mosquito_nets.csv`.
+:::
+
+```{r}
+library(rio)
+library(tidyverse)
+library(MatchIt)
+
+nets <- import("../../dados/mosquito_nets.csv")
+
+names(nets)
+```
+
+# O banco de dados:
+
+| Nome              | Descrição                                                                                                                                                                                                                 |
+|-----------------|-------------------------------------------------------|
+| `malaria_risk`    | Probabilidade de alguém na casa ser infectado com malária. Medido em uma escala de 0-100, com valores mais altos indicando maior risco.                                                                                   |
+| `net` e `net_num` | Variável binária indicando se a casa usou redes mosquiteiras.                                                                                                                                                             |
+| `eligible`        | Variável binária indicando se a casa é elegível para o programa de rede gratuita.                                                                                                                                         |
+| `income`          | Renda mensal da casa, em dólares americanos.                                                                                                                                                                              |
+| `temperature`     | Temperatura média à noite, em Celsius.                                                                                                                                                                                    |
+| `health`          | Saúde auto-relatada na casa. Medido em uma escala de 0-100, com valores mais altos indicando melhor saúde.                                                                                                                |
+| `household`       | Número de pessoas vivendo na casa.                                                                                                                                                                                        |
+| `resistance`      | Algumas cepas de mosquitos são mais resistentes a inseticidas e, portanto, representam um risco maior de infectar pessoas com malária. Medido em uma escala de 0-100, com valores mais altos indicando maior resistência. |
+
+## Testes t independentes para comparar as médias de diferentes variáveis entre dois grupos
+
+Estamos testando se há diferença nas características observáveis entre os dois grupos definidos por `net`, uma variável binária que indica se a casa usou redes mosquiteiras ou não.
+
+```{r}
+# Diferença na saúde entre casas com e sem rede
+t.test(nets$health ~ nets$net_num)
+```
+
+## Explicação do Teste t de Duas Amostras de Welch
+
+Este é um teste t para duas amostras independentes que não assume igualdade de variâncias entre os grupos. É adequado quando as variâncias dos dois grupos que você está comparando podem não ser iguais.
+
+Interpretação para a comparação entre: nets\$health e nets\$net: Estamos comparando as médias da variável health (saúde) entre os dois grupos definidos pela variável net. Net é uma variável binária, onde 1 identifica que a casa usa redes mosquiteiras e 0 indica que não usa.
+
+## Hipóteses do teste
+
+**Hipótese nula:** A verdadeira diferença nas médias entre os grupos é igual a 0.
+
+**Hipótese Alternativa:** A verdadeira diferença nas médias entre os grupos não é igual a 0.
+
+## Os principais resultados do teste para a diferença de saúde entre os dois grupos:
+
+**A diferença de médias é de -6.852:** As casas que não usam redes mosquiteiras (grupo 0) têm uma média de saúde auto-relatada de 48.05696, enquanto as casas que usam redes mosquiteiras (grupo 1) têm uma média de saúde auto-relatada de 54.90896.
+
+Ou seja: 48.05696 - 54.90896 = -6.852
+
+**Estatísticas:**
+
+**t** = -7.6447, **df** = 1346.9, **p-value** = 3.961e-14
+
+O **valor t** de -7.6447 é o valor estatístico do teste t. Ele é negativo, o que indica que a média do grupo que não usa rede é menor que a média do grupo que usa.
+
+O **valor p** é extremamente pequeno (3.961e-14), muito menor que o nível de significância comum de 0,05. Isso indica que a diferença nas médias de saúde entre os dois grupos é estatisticamente significativa.
+
+**Intervalo de Confiança de 95%:** -8.610309 a -5.093693
+
+Estamos 95% confiantes de que a verdadeira diferença nas médias de saúde entre os dois grupos está entre -8.610309 e -5.093693. Como o intervalo não inclui 0 e é totalmente negativo, isso reforça que o grupo sem redes tem uma média significativamente menor do que o grupo com redes mosquiteiras.
+
+**Conclusão:**
+
+Há uma diferença estatisticamente significativa nas médias de saúde auto-relatada entre casas que usam redes mosquiteiras e aquelas que não usam. Especificamente, casas que usam redes mosquiteiras têm uma média de saúde auto-relatada significativamente maior do que aquelas que não usam.
+
+## Porém, o que mais pode variar entre esses dois grupos?
+
+```{r}
+# Diferença na renda entre casas com e sem rede
+t.test(nets$income ~ nets$net_num)
+```
+
+**Interpretação:** A diferença nas médias de renda entre os dois grupos é estatisticamente significativa, com o grupo que usa redes mosquiteiras tendo uma renda média maior. O intervalo de confiança não inclui zero, reforçando a significância da diferença.
+
+```{r}
+# Diferença na temperatura da região em que moram as casas com e sem rede
+t.test(nets$temperature ~ nets$net_num)
+```
+
+**Interpretação:** A diferença na temperatura média dos locais é estatisticamente significativa, mas a diferença em termos absolutos é pequena, indicando que as casas que não usam redes estão em locais ligeiramente mais quentes.
+
+## Exemplo da relação do teste t com regressão linear bivariada
+
+```{r}
+# A mesma comparação feita com uma regressão bivariada
+summary(lm(temperature ~ net_num,
+   data = nets))
+```
+
+**Objetivo:** Avaliar a relação entre a variável independente net_num (indicando uso de redes mosquiteiras) e a variável dependente temperature (temperatura média).
+
+**Interpretação dos Resultados:** Intercepto: O valor de 24.0880 representa a temperatura média esperada quando net_num é zero, ou seja, para o grupo que não usa redes.
+
+**Coeficiente de net_num**: O valor de -0.7070 indica que, em média, as casas que usam redes mosquiteiras têm uma temperatura 0.707 graus Celsius menor do que aquelas que não usam. Este coeficiente é estatisticamente significativo (p \< 0.001), sugerindo uma diferença significativa na temperatura.
+
+**R² e Ajuste:** O R² ajustado é muito baixo (0,0065), indicando que net_num explica apenas uma pequena parte da variação na temperatura. Repare que o coeficiente de net_num é exatamente a diferença de médias do teste t: uma regressão com uma variável binária compara médias.
+
+# Modelo Causal
+
+## Objetivo
+
+Nosso objetivo neste exemplo é estimar o efeito causal do uso de redes mosquiteiras no risco de malária usando apenas dados observacionais.
+
+Obs.: Isso não foi um estudo randomizado controlado (RCT em inglês), então pode parecer um pouco duvidoso fazer afirmações de causalidade.
+
+## Resultado
+
+Como esses dados são simulados, sabemos o verdadeiro efeito causal das redes: ele foi definido na simulação.
+
+O verdadeiro efeito médio do tratamento (ATE, na sigla em inglês) é -10. Usar uma rede mosquiteira faz com que o risco de malária diminua em 10 pontos, em média.
+
+Vamos ver se conseguimos encontrar esse efeito de 10 pontos!
+
+## Estimativa ingênua: correlação não implica causalidade
+
+```{r}
+nets %>%
+  group_by(net_num) %>%
+  summarize(number = n(),
+            avg = mean(malaria_risk))
+
+```
+
+```{r}
+mean(nets$malaria_risk[nets$net==TRUE]) - mean(nets$malaria_risk[nets$net==FALSE])
+```
+
+**Efeito da diferença de médias** = 25.6 - 41.9 = -16.3
+
+```{r}
+model_wrong <- lm(malaria_risk ~ net, data = nets)
+summary(model_wrong)
+```
+
+Embora os resultados mostrem uma correlação clara (casas que usam redes mosquiteiras têm, em média, um risco de malária 16,3 pontos menor, numa escala de 0 a 100), não podemos concluir imediatamente que o uso de redes mosquiteiras causa uma redução no risco de malária com base apenas nesses dados. Pode haver outros fatores não considerados que influenciam o risco de malária. As casas que usam redes têm, por exemplo, renda mais alta e melhor saúde, e essas variáveis também afetam o risco de malária (são *confundidores*). A seguir, usamos o propensity score para ajustar por esses confundidores observáveis.
+
+## Propensity Score
+
+O propensity score é a probabilidade de receber o tratamento dadas as características observáveis. O processo tem dois passos:
+
+1.  Estimar o escore de propensão de cada casa, com uma regressão logística do tratamento (`net`) nos confundidores.
+2.  Usar o escore para comparar casas parecidas. Faremos isso de três formas: (a) incluindo o escore como controle na regressão, (b) transformando-o em pesos de probabilidade inversa (IPW) e (c) pareando casas tratadas e não tratadas (*matching*).
+
+Tudo isso só elimina o viés causado por variáveis **observáveis** incluídas no modelo. Se houver um confundidor não observado, o propensity score não resolve o problema.
+
+```{r}
+ggplot(nets, aes(x = income, y = net_num)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = "lm", formula = y ~ x, color = "red", linewidth = 0.5) +
+  geom_smooth(method = "glm", formula = y ~ x,
+              method.args = list(family = binomial(link = "logit"))) +
+  labs(x = "Income", y = "Probability of using a net")
+```
+
+Para usar a regressão logística, você deve especificar uma família binomial/logit assim: *family = binomial(link = "logit")*
+
+```{r}
+model_logit <- glm(net ~ 
+                     income + #renda
+                     temperature + #temperatura média à noite
+                     health, #saude
+                   data = nets,
+                   family = binomial(link = "logit"))
+
+summary(model_logit)
+```
+
+```{r}
+head(predict(model_logit, type = "response"), n=20)
+```
+
+### Vamos extrair os escores do modelo 
+
+```{r}
+sc <- predict(model_logit, type="response")
+
+min(sc)
+
+max(sc)
+```
+
+### **Significado dos Valores minimos e máximos**
+
+**Intervalo de Propensity Scores**:
+
+-   O intervalo dos scores vai de aproximadamente 0.10 a 0.74.
+
+-   Isso significa que, no seu conjunto de dados, a menor probabilidade estimada de um domicílio participar do tratamento é cerca de 10%, enquanto a maior é cerca de 74%.
+
+**Interpretação Prática**:
+
+-   Um score mais próximo de 1 indica uma maior probabilidade de que, baseando-se nas características observáveis, um domicílio receba o tratamento.
+
+-   Um score mais próximo de 0 indica uma menor probabilidade de participação no tratamento.
+
+
+### Agora vamos plotar as densidades dos dois grupos (inscritos e não inscritos)
+
+```{r}
+
+d2 <- data.frame(sc, nets$net)
+
+head(d2)
+
+ggplot(d2, aes(x=sc, fill=nets.net, colour=nets.net)) + 
+  geom_density(alpha=.3) + 
+  facet_grid(. ~ nets.net)
+
+```
+
+```{r}
+ggplot(d2, aes(x=sc, fill=nets.net, colour=nets.net)) + 
+  geom_density(alpha=.3)
+```
+
+### Interpretação do Gráfico
+
+**Eixos:**
+
+-   Eixo X (sc): Representa os propensity scores, que são as probabilidades preditas de participação no tratamento.
+-   Eixo Y (density): Representa a densidade, indicando a frequência relativa dos scores dentro de cada grupo.
+
+**Distribuições:**
+
+-   O painel à esquerda mostra a distribuição dos scores para o grupo que não recebeu o tratamento (FALSE).
+-   O painel à direita mostra a distribuição dos scores para o grupo que recebeu o tratamento (TRUE).
+
+**Sobreposição:**
+
+-   A sobreposição das distribuições indica a área de comparabilidade, onde os scores dos dois grupos se sobrepõem.
+-   Essa área é importante para o pareamento, pois permite encontrar unidades não tratadas com scores similares às tratadas, facilitando comparações justas.
+
+### Calculando os efeitos
+
+Com os escores calculados, vamos comparar diferentes estimativas do efeito do uso de redes sobre o risco de malária.
+
+```{r}
+d3 <- data.frame(nets$malaria_risk, 
+                 nets$net, 
+                 sc)
+
+```
+
+Modelo 1 - Propensity score como variável de controle
+
+```{r}
+mod <- lm(nets.malaria_risk ~ 
+            nets.net + 
+            sc, 
+          data=d3)
+
+summary(mod) 
+```
+
+Modelo 2 - Estimativa ingênua (sem ajuste)
+
+```{r}
+mod2 <- lm(nets.malaria_risk ~ 
+             nets.net, 
+           data=d3)
+
+summary(mod2) 
+```
+
+Modelo 3 - Sem o propensity score mas controlando pelas variáveis do banco
+
+```{r}
+mod3 <- lm(malaria_risk ~ 
+             net + 
+             income + 
+             temperature + 
+             health,
+           data = nets)
+
+summary(mod3) 
+
+```
+
+Modelo 4 - Ponderação pelo inverso da probabilidade (IPW)
+
+Cada casa tratada recebe peso $1/\hat{p}$ e cada casa não tratada recebe peso $1/(1-\hat{p})$, onde $\hat{p}$ é o escore de propensão. Assim, casas que receberam um tratamento "improvável" para o seu perfil ganham mais peso, e os dois grupos ficam balanceados nos confundidores.
+
+```{r}
+nets <- nets |>
+  mutate(sc = sc,
+         ipw = ifelse(net_num == 1, 1 / sc, 1 / (1 - sc)))
+
+mod_ipw <- lm(malaria_risk ~ net, data = nets, weights = ipw)
+
+summary(mod_ipw)
+```
+
+Modelo 5 - Pareamento (*matching*)
+
+```{r}
+pareamento <- matchit(net ~ income + temperature + health,
+                      data = nets,
+                      method = "nearest",
+                      distance = "mahalanobis",
+                      replace = TRUE)
+
+summary(pareamento)
+
+dados_pareados <- match.data(pareamento)
+
+# Com reposição, cada caso de controle pode ser usado mais de uma vez:
+# por isso é obrigatório usar os pesos gerados pelo matchit
+mod_match <- lm(malaria_risk ~ net, data = dados_pareados, weights = weights)
+
+summary(mod_match)
+```
+
+### Conclusão:
+
+Todos os modelos indicam que o uso de redes mosquiteiras está associado a uma redução no risco de malária, mas a magnitude varia:
+
+| Modelo | Estimativa |
+|---|---|
+| Diferença de médias (ingênuo) | cerca de −16,3 |
+| Propensity score como controle | cerca de −10,3 |
+| Controles diretos na regressão | cerca de −10,4 |
+| Ponderação (IPW) | cerca de −10,1 |
+| Pareamento | ver resultado acima |
+
+A estimativa ingênua exagera o efeito porque as casas que usam redes já tinham, por outros motivos (renda, saúde, temperatura), menor risco de malária. Quando ajustamos pelos confundidores observáveis, as estimativas se aproximam do verdadeiro efeito de −10 pontos definido na simulação; a ponderação (IPW) é a que chega mais perto. Lembre que isso só funciona porque, nesta simulação, sabemos que renda, temperatura e saúde são todos os confundidores relevantes. Com dados reais, nunca temos essa garantia.

@@ -1,0 +1,549 @@
+---
+title: "Aula 1 — Operações básicas em R"
+author: "Felipe Nunes e João Paulo Dellasta"
+---
+
+📑 [Slides da aula (PDF)](slides-introducao-r.pdf) · 💻 [Script usado em sala](aula01-script-em-sala.R)
+
+# Material de Apoio
+
+-   Introdução ao R (Aula 1) - Prof. Felipe Nunes:
+
+https://www.youtube.com/watch?v=ndKq0dsXa3k&list=PL7Xpx-hrPv-F7ac1yjPYHLdzuK8Op99Qt&index=1
+
+-   Introdução ao R / Parte 2 (Aula 2) - Prof. Felipe Nunes
+
+https://www.youtube.com/watch?v=klMOSJgKn5s&list=PL7Xpx-hrPv-F7ac1yjPYHLdzuK8Op99Qt&index=2
+
+-   Playlist: Análise de Dados para Ciências Sociais
+
+https://www.youtube.com/watch?v=ndKq0dsXa3k&list=PL7Xpx-hrPv-F7ac1yjPYHLdzuK8Op99Qt&pp=iAQB
+
+-   Playlist: Avaliação de políticas públicas B
+
+https://www.youtube.com/watch?v=FoTtIomuCRc&list=PL7Xpx-hrPv-GUMXGpajmfLqdCZf3VMN4u&pp=iAQB
+
+-   Introdução ao curso de avaliação de impacto
+
+https://www.youtube.com/watch?v=FoTtIomuCRc&list=PL7Xpx-hrPv-GUMXGpajmfLqdCZf3VMN4u
+
+-   Por que é importante fazer avaliação de impacto
+
+https://www.youtube.com/watch?v=ySI2SoHq-lc&list=PL7Xpx-hrPv-GUMXGpajmfLqdCZf3VMN4u&index=2
+
+-   Custo-Efetividade em Avaliação de Impacto
+
+https://www.youtube.com/watch?v=dORIHy1DlJE&list=PL7Xpx-hrPv-GUMXGpajmfLqdCZf3VMN4u&index=3
+
+## Como funciona - Comentando o código
+
+O R utiliza o sinal de \# para adicionar comentários, para que você e outros possam entender sobre o que se trata o código R. Comentários não são executados como código R, portanto, eles não influenciarão seu resultado. Comentar o código é uma das boas praticas a fim de aumentar a transparencia e organizar as próprias ideias. No exemplo abaixo, faremos uma soma com um comentário.
+
+```{r}
+# Calculando 2 + 2
+
+2 + 2
+```
+
+Perceba que a operação é feita, mas o comentário não é processado.
+
+## O R enquanto calculadora
+
+Na sua forma mais básica, o R pode ser usado como uma calculadora simples. Considere os seguintes operadores aritméticos:
+
+-   Adição: +
+
+-   Subtração: -
+
+-   Multiplicação: \*
+
+-   Divisão: /
+
+-   Exponenciação: \^
+
+-   Raiz quadrada: sqrt()
+
+O operador \^ eleva o número à sua esquerda à potência do número à sua direita: por exemplo, 3\^2 é 9.
+
+```{r}
+# Soma
+
+25 + 32
+```
+
+```{r}
+# Subtração
+
+26 - 5
+```
+
+```{r}
+# Divisão
+
+14 / 7
+```
+
+```{r}
+# Multiplicação
+
+5 * 5
+```
+
+```{r}
+# Exponenciação
+
+5 ^ 2
+```
+
+```{r}
+# Raiz quadrada
+
+sqrt(25)
+```
+
+## Atribuição de variáveis
+
+Podemos atribuir elementos a variáveis (objetos que recebem dados que variam). Para atribuir um valor à uma variável, usamos o sinal `<-` , semelhante a uma seta. Vamos atribuir o valor 10 a variável x.
+
+```{r}
+# Atribuindo valores
+
+x <- 10
+
+x
+```
+
+Agora, a variável (que também podemos chamar de objeto) x assumiu o valor 10, e podemos fazer operações com ela.
+
+```{r}
+# Dividindo x por 2
+
+x/2
+```
+
+Podemos sempre alterar o valor de x, para que a variável receba diferentes objetos. **Importante:** Toda vez que atribuir um novo valor a um objeto, o anterior será reescrito, o que significa que ele será deletado e substituído. Assim, **é preciso prestar atenção nos objetos sendo criados!**
+
+```{r}
+# Atribuindo um novo valor a x
+
+x <- 23
+
+x
+```
+
+Além disso, podemos atribuir outros valores a diferentes variáveis e fazer operações com elas.
+
+```{r}
+# Operações com dois objetos
+
+y <- 27
+
+x + y
+```
+
+Por fim, também podemos salvar os resultados dessas operações em um novo objeto para manter o registro.
+
+```{r}
+# Salvando os resultados em um objeto
+
+z <- x + y
+
+z
+```
+
+## Classes básicas de dados no R
+
+Além de números, o R pode trabalhar com diferentes classes, como textos, datas, fatores, listas, etc... Para operações básicas, podemos pensar em três classes principais: as numéricas, as de caractere e as lógicas. Já atribuímos valores númericos, vamos ver agora como atribuir valores de outras classes.
+
+```{r}
+# Atribuindo um valor numérico
+numero <- 23
+
+# Atribuindo uma string ou variável textual
+texto <- "Olá pessoal"
+
+# Atribuindo uma valor lógico
+logica <- TRUE
+```
+
+Para descobrir a classe de um objeto, usamos o comando class().
+
+```{r}
+# Classe numeric
+class(numero)
+```
+
+```{r}
+# Classe character
+class(texto)
+```
+
+É importante notar que todo valor de texto deve ser escrito entre aspas "". Caso isso não ocorra, o R lerá como se fosse um objeto de seu ambiente e não um texto sendo atribuido.
+
+```{r}
+# Classe logical
+class(logica)
+```
+
+Diferentes classes permitem diferentes manipulações. Por exemplo, não podemos fazer operações matemáticas com textos. Caso tentemos, a operação retorna um erro:
+
+```{r, error=TRUE}
+texto + numero
+```
+
+Já os valores lógicos são convertidos em números quando usados em contas (`TRUE` vale 1 e `FALSE` vale 0). Isso é útil, por exemplo, para contar quantos casos atendem a uma condição:
+
+```{r}
+logica + numero
+
+sum(c(TRUE, FALSE, TRUE))
+```
+
+Além disso, o R é *case sensitive*, o que significa que ele lê como diferente letras maiúsculas e minúsculas. Podemos observar esse exemplo comparando caracteres
+
+```{r}
+"texto" == "Texto"
+```
+
+## Vetores
+
+Um vetor é uma sequência ordenada de elementos do mesmo tipo de dados. Ele pode conter números, textos, valores lógicos e outros tipos de dados. Os vetores são fundamentais para a análise de dados em R, pois permitem armazenar e manipular informações de forma organizada. Em R, você pode criar vetores usando a função c() (*combine*). Dentro dos parênteses da função, você coloca os elementos que deseja armazenar no vetor, separados por vírgulas. Vejamos alguns exemplos:
+
+```{r}
+# Criando um vetor numérico
+numeros <- c(1, 2, 3, 4, 5)
+
+# Criando um vetor de caracteres
+nomes <- c("Alice", "João", "Carol")
+
+# Criando um vetor lógico
+verdadeiro_falso <- c(TRUE, FALSE, TRUE)
+```
+
+Podemos acessar elementos de um vetor por meio de indices, que operam por meio de \[\]. Por exemplo:
+
+```{r}
+# Acessando o primeiro valor numérico
+primeiro_numero <- numeros[1]
+
+primeiro_numero
+```
+
+```{r}
+# Acessando o segundo elemento do vetor "nomes"
+segundo_nome <- nomes[2]
+
+segundo_nome
+```
+
+Assim como outros objetos, podemos fazer operações com vetores. Assim, manipulamos um conjunto de dados em sequência:
+
+```{r}
+vetor <- c(2,5,20)
+
+vetor*3
+```
+
+E podemos fazer operações com dois vetores, como somar um vetor pelo outro ou diminuir.
+
+```{r}
+# Somando dois vetores
+vetor1 <- c(1, 2, 3)
+vetor2 <- c(4, 5, 6)
+soma <- vetor1 + vetor2
+
+soma
+```
+
+Note que a soma se deu de acordo com o índice, ou seja, o primeiro valor de vetor1 foi somado com o primeiro valor de vetor2 e assim por diante. Caso os valores não possuam o mesmo tamanho, o vetor menor entrará em um loop, repetindo os primeiros casos até atender ao tamanho do vetor maior.
+
+```{r, warning=TRUE}
+# Somando dois vetores
+vetor1 <- c(1, 2, 3)
+vetor2 <- c(4, 5)
+soma <- vetor1 + vetor2
+
+soma
+```
+
+Note que recebemos um aviso explicando que houve a repetição porque vetor2 é menor que vetor1: o terceiro valor de soma corresponde à soma de 3 (último valor de vetor1) com 4 (primeiro valor de vetor2, reciclado).
+
+Podemos extrair informações sobre o tamanho do vetor com o comando length()
+
+```{r}
+length(vetor1)
+```
+
+Por fim, podemos criar vetores a partir de sequências numéricas e repetições de padrões. Para criar uma sequência numérica, usamos o operador :
+
+```{r}
+sequencia <- 1:10
+
+sequencia
+```
+
+Ou podemos fazer isso pelo comando seq()
+
+```{r}
+sequencia2 <- seq(10)
+
+sequencia2
+```
+
+Dentro do comando seq, podemos determinar o ponto inicial da sequência e se haverá saltos entre os números
+
+```{r}
+# sequencia de 10 a 20
+sequencia3 <- seq(from = 10, to = 20)
+
+sequencia3
+```
+
+```{r}
+# sequencia de 10 a 20 de 2 em 2
+sequencia4 <- seq(from = 10, to = 20, by = 2)
+
+sequencia4
+```
+
+Por fim, podemos criar repetições padrões no vetor por meio do comando rep()
+
+```{r}
+# Repetição de caracteres
+joao <- rep(x = "João", times = 10)
+
+joao
+```
+
+E concatenamos sequências usando o comando c()
+
+```{r}
+# Repetição de caracteres
+nomes <- c(rep(x = "Maria", times = 10), joao)
+
+nomes
+```
+
+## Operadores lógicos
+
+Os operadores lógicos permitem que você compare valores e avalie se certas condições são verdadeiras ou falsas. Em R, os valores lógicos são representados por TRUE (verdadeiro) e FALSE (falso). Os principais operadores lógicos em R são:
+
+! (negação): Inverte o valor lógico. Por exemplo, !TRUE é igual a FALSE.
+
+& (E lógico): Retorna TRUE se ambas as condições forem verdadeiras. Por exemplo, TRUE & TRUE é igual a TRUE, enquanto TRUE & FALSE é igual a FALSE.
+
+| (OU lógico): Retorna TRUE se pelo menos uma das condições for verdadeira. Por exemplo, TRUE \| FALSE é igual a TRUE.
+
+```{r}
+# Exemplo de operadores lógicos
+condicao1 <- TRUE
+condicao2 <- FALSE
+
+resultado_and <- condicao1 & condicao2  
+
+resultado_and # Retornará TRUE se condicao1 E condicao2 forem TRUE (verdadeiro)
+```
+
+```{r}
+resultado_or <- condicao1 | condicao2   
+
+resultado_or # Retornará TRUE se condicao1 OU condicao2 forem TRUE (verdadeiro)
+```
+
+```{r}
+resultado_not <- !condicao1  
+
+resultado_not # Retornará TRUE se condicao1 não for TRUE (verdadeiro)
+```
+
+### Operadores de comparação
+
+Além dos operadores lógicos, temos os operadores de comparação que comparam valores e retornam valores lógicos:
+
+== (igual a): Retorna TRUE se os valores comparados forem iguais.
+
+!= (diferente de): Retorna TRUE se os valores comparados forem diferentes.
+
+\< (menor que): Retorna TRUE se o valor da esquerda for menor do que o valor da direita.
+
+\> (maior que): Retorna TRUE se o valor da esquerda for maior do que o valor da direita.
+
+\<= (menor ou igual a): Retorna TRUE se o valor da esquerda for menor ou igual ao valor da direita.
+
+\>= (maior ou igual a): Retorna TRUE se o valor da esquerda for maior ou igual ao valor da direita.
+
+```{r}
+# Exemplo de operadores de comparação
+x <- 5
+y <- 10
+resultado1 <- x == y 
+resultado1 # Retornará TRUE se x for igual a y
+
+```
+
+```{r}
+resultado2 <- x < y 
+resultado2 # Retornará TRUE se x for menor que y
+```
+
+```{r}
+resultado3 <- x >= y
+resultado3 # Retornará TRUE se x for maior ou igual a y (aqui, FALSE)
+```
+
+## Aplicando condições - ifelse()
+
+Podemos aplicar condições para que o R faça algo quando uma condição esta presente e outra coisa quando esta está ausente. Fazemos isso por meio da função ifelse(), que opera na seguinte estrutura: ifelse(condicao, valor_verdadeiro, valor_falso). O ifelse pode ser aplicado diretamente em vetores e variáveis, da seguinte maneira:
+
+```{r}
+# Vetor de idades
+idades <- c(25, 18, 30, 15, 22)
+
+# Usando ifelse() para categorizar as idades
+categorias <- ifelse(idades >= 18, "Adulto", "Menor de Idade")
+
+categorias
+```
+
+Podemos aplicar essas operações a variáveis de outras classes que não numéricas, como caracteres:
+
+```{r}
+# Vetor de nomes
+nomes <- c("João", "Gabriel", "Teresa", "Adriana", "Maria")
+
+# Usando ifelse() para categorizar os nomes
+alunos <- ifelse(nomes == "João", "Professor", "Aluno")
+
+alunos
+```
+
+Também podemos aplicar essa função simultaneamente em múltiplos vetores. Por exemplo, é necessário tirar uma nota maior ou igual a 60 em história e em matemática para ser aprovado na escola durante o ensino médio. Podemos avaliar em uma turma de 10 alunos quantos seriam aprovados.
+
+```{r}
+# Notas nas disciplinas
+historia <- c(60, 75, 80, 87, 59, 71, 89, 98, 100, 96)
+matematica <- c(65, 73, 62, 12, 81, 40, 60, 70, 90, 34)
+
+# Usando ifelse() com múltiplos vetores
+status <- ifelse(historia >= 60 & matematica >= 60, "Aprovado", "Reprovado")
+
+status
+```
+
+## Operadores matemáticos e de resumo
+
+Agora, vamos explorar os operadores matemáticos básicos em R, incluindo as funções sum, min, max, mean, median, summary e table. Essas funções são essenciais para realizar cálculos estatísticos e matemáticos, bem como para resumir e visualizar informações de conjuntos de dados.
+
+-   sum()
+
+A função sum() é usada para calcular a soma dos valores de um vetor ou variável.
+
+```{r}
+# Vetor de números
+numeros <- c(10, 20, 30, 40, 50)
+
+# Calcular a soma dos números
+soma <- sum(numeros)
+soma
+```
+
+-   min()
+
+A função min() é usada para encontrar o valor mínimo em um vetor ou variável.
+
+```{r}
+# Vetor de números
+numeros <- c(15, 8, 25, 12, 30)
+
+# Encontrar o valor mínimo
+minimo <- min(numeros)
+minimo
+```
+
+-   max()
+
+A função max() é usada para encontrar o valor máximo em um vetor ou variável.
+
+```{r}
+# Vetor de números
+numeros <- c(15, 8, 25, 12, 30)
+
+# Encontrar o valor máximo
+maximo <- max(numeros)
+maximo
+```
+
+-   mean()
+
+A função mean() é usada para calcular a média dos valores de um vetor ou variável
+
+```{r}
+# Vetor de números
+numeros <- c(10, 20, 30, 40, 50)
+
+# Calcular a média dos números
+media <- mean(numeros)
+media
+```
+
+-   median()
+
+A função median() é usada para calcular a mediana dos valores de um vetor ou variável
+
+```{r}
+# Vetor de números
+numeros <- c(15, 8, 25, 12, 30)
+
+# Calcular a mediana dos números
+mediana <- median(numeros)
+mediana
+```
+
+-   summary()
+
+A função summary() é usada para obter um resumo estatístico de um objeto, como um vetor numérico variável numérica.
+
+```{r}
+# Vetor de números
+numeros <- c(10, 20, 30, 40, 50)
+
+# Obter um resumo estatístico
+resumo <- summary(numeros)
+resumo
+```
+
+-   table()
+
+A função table() é usada para criar uma tabela de frequência de valores em um vetor.
+
+```{r}
+# Categorias a serem medidas
+categorias <- c("A", "B", "A", "C", "B", "A", "C", "A", "B")
+
+# Criar uma tabela de frequência
+tabela <- table(categorias)
+tabela
+```
+
+## Instalação de pacotes
+
+As funções demonstradas até aqui estão todas presentes no ambiente natural do R, não sendo necessário instalá-las. Contudo, a grande vantagem do R é que, por ser um software aberto, podemos carregar pacotes (ou bibliotecas), que trazem extensões a suas funcionalidades, permitindo operações especificas e mais avançadas.
+
+Antes de usar um pacote, é necessário instalá-lo em seu R. Para instalar um pacote, usamos a função install.packages(). **É importante lembrar que esse processo só precisa ser realizado uma vez, e não é preciso repetir a instalação**. Também é importante que o **nome do pacote venha sempre entre aspas ("nome do pacote")**.
+
+```{r, eval=FALSE}
+# Instalar o pacote "tidyverse"
+install.packages("tidyverse")
+```
+
+Com o pacote instalado, nos podemos habilitar seu uso com o comando library().
+
+```{r}
+library(tidyverse)
+```
+
+A partir desse processo, podemos utilizar as funções que estão presentes no pacote tidyverse, que serão muito utilizadas na próxima aula!
+
+## Resumo:
+
+Nessa primeira aula, vimos as potencialidades e limites do R, como atribuir valores a um objeto e como operacionalizar formas e condições nestes objetos. Também passamos rapidamente por alguns dos operadores básicos e como instalar pacotes com mais aplicações. Na próxima aula, entraremos no pacote tidyverse, que foi criado para facilitar a manipulação de dados em R. Pratiquem os códigos disponíveis e fiquem brincando com os dados criados, pois o conhecimento em R só se adiquire praticando. Lembrem-se, toda linguagem de programação é uma lingua!!!

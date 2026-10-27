@@ -1,0 +1,160 @@
+---
+title: "Exercício de revisão — DiD, RDD e propensity score"
+author: "João Cardoso L. Camargos e João Paulo Dellasta"
+---
+
+## Exercícios de Revisão
+
+Nesta aula faremos alguns exercícios de revisão em conjunto. Realizaremos as seguintes atividades, disponíveis em: https://rpubs.com/jclcamargos/rev_ex_avpb. Ao todo, revisaremos três técnicas, Diferenças em Diferenças, Regressão com Descontinuidade e aplicação de Propensity Scores.
+
+Pacotes a serem usados:
+
+```{r}
+# Instale antes, se necessário: install.packages(c("tidyverse", "dataverse", "stargazer", "fixest"))
+library(tidyverse)
+library(dataverse)
+library(stargazer)
+library(fixest)
+```
+
+## 1 - Diff in Diff
+
+Vamos replicar o estudo de [Fraser et al, 2020](https://www.sciencedirect.com/science/article/abs/pii/S2210422420301192), em que a técnica de Diferenças em Diferenças foi aplicada para entender como o processo de organização social impacta a emissão de gás carbono. A teoria aponta que o aumento da organização social levaria a uma redução na emissão de gás carbono. Assim, o estudo mobilizou dados de diferentes cidades na região de Tóquio, avaliando sua capacidade de organização social e a classificando em alta (1) e baixa (0). Assim, utilizaremos a DiD para estimar o efeito ao longo do tempo. A base de dados a ser utilizada segue a seguinte estrutura:
+
+| Nome                  | Descrição                                             |
+|---------------------|---------------------------------------------------|
+| `muni`                | Nome do Municipio                                     |
+| `muni_code`           | Código do Municipio                                   |
+| `year`                | Ano                                                   |
+| `counter`             | Contagem do ano a partir de 2005 (0, 1,...,12)        |
+| `emissions`           | Emissões de carbono (quilotons por 1.000 habitantes) |
+| `treat`               | Tratamento binário: 1 a partir do primeiro ano em que o município ficou acima da mediana de `fin_str_index` |
+| `fin_str_index`       | Índice de força financeira do município (versão contínua do tratamento) |
+| `pop_density`         | Densidade populacional                                |
+| `income_per_capita`   | Renda per capita                                      |
+| `pop_age_65_plus`     | \% de pessoas com 65 anos ou mais                     |
+| `pop_college`         | \% com ensino superior completo                       |
+| `value_agr_mill`      | Produção agrícola em milhões de ienes por habitante   |
+| `value_manuf_mill`    | Produção industrial em milhões de ienes por habitante |
+| `value_commerce_mill` | Produção comercial em milhões de ienes por habitante  |
+
+::: {.callout-note}
+Atenção: no código abaixo, o "tratamento" é construído a partir de `fin_str_index`, o índice de força financeira (capacidade fiscal) de cada município. Ao interpretar os resultados, lembre que essa é a medida usada aqui para "capacidade" do município; confira no artigo original como os autores definem e medem os conceitos.
+:::
+
+Baixando os dados
+
+```{r}
+
+
+# Importando o banco de dados do Harvard Dataverse
+# (na primeira vez, baixa e salva uma cópia em dados/; depois, lê a cópia local)
+arquivo_fraser <- "../dados/fraser_dataset.csv"
+
+if (!file.exists(arquivo_fraser)) {
+  Sys.setenv("DATAVERSE_SERVER" = "dataverse.harvard.edu")
+  dat_bruto <- get_dataframe_by_name(
+    filename  = "dataset.tab",
+    dataset   = "10.7910/DVN/E8PEW7")
+  write_csv(dat_bruto, arquivo_fraser)
+}
+
+dat <- read_csv(arquivo_fraser, show_col_types = FALSE)
+
+# Limpando as cidades
+dat <- dat |>
+  # Selecionando apenas as cidades na região de Tokyo
+  dplyr::filter(pref == "Tokyo") |>
+  # Calculando a emissão de carbono em kilotons por 1000 residentes
+  mutate(emissions = emissions / pop * 1000) |>
+  # Calculando a densidade populacional
+  mutate(pop_density = pop / area_inhabitable) |>
+  # Criando uma contagem anual de 1, 2, 3, 4, etc.
+  mutate(counter = year - min(year)) |>
+  # Criando o tratamento: a cidade passa a ser tratada no primeiro ano em que fica
+  # acima da mediana de fin_str_index e continua tratada pelo resto do período
+  mutate(acima_mediana = fin_str_index > median(fin_str_index, na.rm = TRUE)) |>
+  arrange(muni_code, year) |>
+  group_by(muni_code) |>
+  mutate(treat = as.numeric(cummax(coalesce(acima_mediana, FALSE)))) |>
+  ungroup() |>
+  # Garantindo um fator para efeitos fixos
+  mutate(year = factor(year),
+         muni_code = factor(muni_code)) |>
+  # Selecionando apenas as variáveis de interesse:
+   select(
+    muni, # nome do município
+    muni_code, # código único de cinco dígitos para identificação de cada cidade
+    year, # ano
+    counter, # número de anos passados desde 2005 (0, 1, 2, ...),
+    emissions, # emissões em quilotons por 1.000 habitantes
+    treat, # Alta capacidade de organização (1/0)
+    fin_str_index, # capacidade governamental (numérica) e um conjunto de covariáveis que também podem influenciar as emissões, incluindo:
+    pop_density, # densidade populacional
+    income_per_capita, # renda per capita
+    pop_age_65_plus, # % de pessoas com 65 anos ou mais
+    pop_college, # % com ensino superior completo
+    value_agr_mill, # produção agrícola em milhões de ienes por habitante
+    value_manuf_mill, # produção industrial em milhões de ienes por habitante
+    value_commerce_mill # produção comercial em milhões de ienes por habitante
+) 
+
+head(dat)
+```
+
+### Tarefas
+
+1 - **Faça o diagnóstico visual (por meio de um gráfico), da tendência paralela entre tratamento e controle**
+
+2 - **Estime o efeito causal da organização social usando o estimador de Diferenças em Diferenças. Estime o modelo naive (sem controles) e interprete os resultados**
+
+3 - **Reestime o modelo novamente, dessa vez inserindo os seguintes controles: Densidade Populacional, Renda per capita, % de pessoas com mais de 65 anos, % de pessoas com ensino superior, Produção agrícola, Produção industrial e Produção comercial. Interprete os resultados**
+
+## 2 - RDD
+
+Nesse caso, seguiremos um exemplo hipotético criado por Andrew Heiss para aplicação de RDD. Vamos avaliar uma política de inserção de alunos em um programa de monitoria caso tenham tirado uma nota abaixo 70% no exame de entrada da disciplina. Assim, veremos o impacto da tutoria no exame final do curso. Os dados seguem o seguinte padrão:
+
+| Nome            | Descrição                              |
+|-----------------|----------------------------------------|
+| `id`            | ID do aluno                            |
+| `entrance_exam` | Nota do exame de entrada               |
+| `exit_exam`     | Nota do exame de saída                 |
+| `tutoring`      | Tratamento (Participação na monitoria) |
+
+Baixando os dados
+
+```{r}
+# Na primeira vez, baixa e salva uma cópia em dados/; depois, lê a cópia local
+arquivo_tutoria <- "../dados/tutoring_program.csv"
+
+if (!file.exists(arquivo_tutoria)) {
+  download.file('https://evalf20.classes.andrewheiss.com/data/tutoring_program.csv',
+                destfile = arquivo_tutoria)
+}
+
+dat2 <- read.csv(arquivo_tutoria)
+
+head(dat2)
+```
+
+### Tarefas
+
+1 - **Faça o diagnóstico visual (por meio de um gráfico), para avaliar se o ponto de corte (elegibilidade ao programa) está claro**
+
+2 - **Faça o diagnóstico visual (por meio de um gráfico), do efeito causal por meio de um gráfico, utilizando todos os casos**
+
+3 - **Estime o tamanho do efeito causal da monitoria usando o estimador de Regressão com Descontinuidade. Estime o modelo naive (sem determinar uma janela) e interprete os resultados**
+
+4 - **Reestime o modelo novamente, dessa vez filtrando para obter uma janela de pessoas que tiraram entre 60 e 80 porcento no exame de entrada (janela de 10 pontos). Compare com os resultados do modelo anterior, qual seria o melhor?**
+
+## 3 - Propensity Scores
+
+Para finalizar nossa revisão, trabalharemos um pouco com propensity scores. Dessa forma, retornaremos ao banco de dados do exercício sobre Diferenças em Diferenças. Vamos reestimar o modelo, dessa vez usando Propensity Scores.
+
+### Tarefas
+
+1 - **Calcule o propensity score do tratamento (`treat`), utilizando como preditores os mesmos controles da tarefa 1.3**
+
+2 - **Faça um gráfico de densidade com a probabilidade de atribuição do tratamento a partir dos propensity scores**
+
+3 - **Reestime o modelo de diferenças em diferenças, só que aplicando os propensity scores no lugar dos controles. Interprete os resultados**

@@ -1,0 +1,162 @@
+---
+title: "Exercício 7 — Avaliando o HISP com Regressão com Descontinuidade"
+author: "Nome do(a) aluno(a)"
+---
+
+## Instruções
+
+As perguntas ao final devem ser respondidas e entregues como relatório gerado em Quarto. Entrega original: 20/12/2024, às 23h59.
+
+## Avaliando o HISP com RDD
+
+Neste exercício vamos comparar os gastos em saúde entre domicílios logo abaixo e logo acima do ponto de corte do índice de pobreza, nos municípios que receberam o programa.
+
+Após algumas investigações sobre o desenho do HISP, você descobre que, na prática, as autoridades focalizaram o programa nas famílias de baixa renda usando a linha de pobreza nacional.
+
+A linha de pobreza baseia-se em um índice de pobreza, que atribui a cada família do país um escore entre 20 e 100, com base em seus ativos, condições de moradia e estrutura sociodemográfica. **Quanto maior o escore, menos pobre é a família.**
+
+A linha de pobreza foi estabelecida oficialmente na marca de 58: famílias com escore até 58 são classificadas como pobres (e elegíveis ao programa), e famílias com escore acima de 58 não são consideradas pobres.
+
+Mesmo nos municípios de tratamento, somente as famílias pobres são elegíveis para se inscrever no HISP; todavia, a amostra inclui dados tanto das famílias pobres quanto das famílias em melhor situação econômica nesses municípios.
+
+```{r}
+library(haven) # abre arquivos do Stata
+```
+
+Vamos abrir o banco de dados e selecionar os dados que nos interessam: os municípios que receberam o tratamento.
+
+```{r}
+d <- read_dta("../dados/evaluation.dta")
+
+d <- d[d$treatment_locality == 1, ] # famílias elegíveis e não elegíveis dos mesmos municípios
+dim(d)
+names(d)
+
+# A elegibilidade segue exatamente a regra do índice de pobreza (escore <= 58)
+table(elegivel = d$eligible, abaixo_do_corte = d$poverty_index <= 58)
+```
+
+## Antes do programa (linha de base)
+
+Usando os domicílios dos municípios de tratamento, vamos representar graficamente a relação entre o índice de pobreza e os gastos com saúde **antes** do início do HISP (rodada 0).
+
+```{r}
+d.base <- d[d$round == 0, ]
+dim(d.base)
+
+plot(d.base$poverty_index, d.base$health_expenditures,
+     main = "Gastos em saúde e índice de pobreza (linha de base)",
+     xlab = "Índice de pobreza",
+     ylab = "Gastos em saúde")
+```
+
+Vamos rodar a regressão e plotar os valores previstos.
+
+```{r}
+mod.base <- lm(health_expenditures ~ poverty_index, # gastos em saúde ~ índice de pobreza
+               data = d.base)
+
+summary(mod.base)
+
+d.base$predito <- predict(mod.base) # valores previstos pela regressão
+
+plot(d.base$poverty_index,
+     d.base$predito,
+     xlim = c(23, 100),
+     ylim = c(7, 31),
+     main = "Índice de pobreza e gastos com saúde na linha de base",
+     xlab = "Índice de pobreza na linha de base",
+     ylab = "Valores previstos de gastos com saúde")
+abline(v = 58) # linha demarcando o ponto de corte
+```
+
+A figura mostra que, à medida que aumenta o escore das famílias no índice de pobreza (ou seja, à medida que as famílias ficam **menos pobres**), a regressão prevê gastos com saúde mais altos: famílias em melhor situação econômica gastam mais com saúde.
+
+## Depois do programa (rodada de acompanhamento)
+
+Dois anos após o início do piloto, apenas as famílias com escore até 58 (à esquerda da linha de pobreza) puderam se inscrever no HISP. Usando agora os dados **pós-tratamento** (rodada 1), refazemos o gráfico. Primeiro, centralizamos o índice de pobreza no ponto de corte, criando uma inclinação separada para cada lado.
+
+```{r}
+d.pos <- d[d$round == 1, ]
+
+d.pos$poverty_index_left  <- ifelse(d.pos$poverty_index <= 58, d.pos$poverty_index - 58, 0)
+d.pos$poverty_index_right <- ifelse(d.pos$poverty_index >  58, d.pos$poverty_index - 58, 0)
+```
+
+Rodando o modelo
+
+```{r}
+mod.pos <- lm(health_expenditures ~
+                poverty_index_left +
+                poverty_index_right +
+                eligible,
+              data = d.pos)
+
+summary(mod.pos)
+
+d.pos$predito <- predict(mod.pos)
+
+plot(d.pos$poverty_index,
+     d.pos$predito,
+     xlim = c(23, 100),
+     ylim = c(0, 31),
+     main = "Índice de pobreza e gastos com saúde\ndois anos depois do início do programa",
+     xlab = "Índice de pobreza na linha de base",
+     ylab = "Valores previstos de gastos com saúde")
+abline(v = 58)
+```
+
+Desta vez, a relação entre o índice de pobreza e os gastos previstos com saúde não é mais contínua: existe uma clara interrupção, ou "descontinuidade", na linha de pobreza. A descontinuidade reflete uma queda nos gastos com saúde entre as famílias elegíveis ao programa. Como as famílias logo abaixo e logo acima do limite de 58 pontos são muito semelhantes, a explicação mais plausível para o salto é que um grupo era elegível para se inscrever no programa e o outro, não.
+
+Como estimar essa diferença ou efeito causal? O coeficiente de `eligible` no modelo acima já é a estimativa do salto no ponto de corte. Podemos também incluir controles:
+
+```{r}
+mod.pos.controles <- lm(health_expenditures ~
+                          poverty_index_left +
+                          poverty_index_right +
+                          eligible +
+                          age_hh +
+                          educ_hh +
+                          hhsize +
+                          dirtfloor +
+                          bathroom +
+                          land,
+                        data = d.pos)
+
+summary(mod.pos.controles)
+```
+
+Uma forma alternativa e mais "visual" de calcular o efeito é comparar os valores previstos de quem está logo abaixo e logo acima do corte:
+
+```{r}
+d.pos$predito <- predict(mod.pos.controles)
+
+d.predito.left  <- d.pos[d.pos$poverty_index > 55 & d.pos$poverty_index <= 58, ]
+d.predito.right <- d.pos[d.pos$poverty_index > 58 & d.pos$poverty_index <= 61, ]
+
+mean(d.predito.left$predito) - mean(d.predito.right$predito)
+```
+
+## Teste de placebo: havia descontinuidade antes do programa?
+
+Se o salto foi causado pelo programa, ele não deveria existir (ou deveria ser bem menor) na linha de base, quando ninguém ainda recebia o benefício. Vamos estimar o mesmo modelo com os dados da rodada 0.
+
+```{r}
+d.base$poverty_index_left  <- ifelse(d.base$poverty_index <= 58, d.base$poverty_index - 58, 0)
+d.base$poverty_index_right <- ifelse(d.base$poverty_index >  58, d.base$poverty_index - 58, 0)
+
+mod.placebo <- lm(health_expenditures ~
+                    poverty_index_left + poverty_index_right + eligible +
+                    age_hh + educ_hh + hhsize + dirtfloor + bathroom + land,
+                  data = d.base)
+
+summary(mod.placebo)
+```
+
+## Perguntas
+
+### 1. Por que podemos analisar os dados no intervalo próximo de 58 no índice de pobreza como se fosse uma área quase-experimental?
+
+### 2. Como interpretar o efeito causal estimado? Compare a estimativa da rodada de acompanhamento com a do teste de placebo na linha de base: o salto na linha de base é zero? Se não for, o que isso sugere sobre a estimativa? Por que a estimativa "visual" (diferença de valores previstos em janelas de 3 pontos) difere do coeficiente de `eligible`?
+
+### 3. Como gestor público, qual seria a recomendação que você daria em relação à continuidade/expansão ou não deste programa?
