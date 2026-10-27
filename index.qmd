@@ -5,7 +5,12 @@ number-sections: false
 toc: false
 ---
 
-Este site reúne as aulas práticas, os exercícios e as soluções que preparei para a disciplina de **Avaliação de Políticas Públicas (AVPP)** do curso de Gestão Pública da UFMG, no segundo semestre de 2024. O curso combina os fundamentos de inferência causal com a aplicação dos principais desenhos de avaliação de impacto em R.
+Este site reúne as aulas práticas, os exercícios e as soluções que preparei como monitor da disciplina de **Avaliação de Políticas Públicas (AVPP)** do curso de Gestão Pública da UFMG, no segundo semestre de 2024. O curso combina os fundamentos de inferência causal com a aplicação dos principais desenhos de avaliação de impacto em R.
+
+::: {.callout-note appearance="simple"}
+## Professor da disciplina
+A disciplina foi ministrada pelo **Prof. Felipe Nunes** (UFMG). Mais materiais e as videoaulas estão no [site do professor](https://www.felipenunescp.com/teaching.html), na página da disciplina [Avaliação de Políticas Públicas](https://www.felipenunescp.com/avaliaccedilatildeob.html) e na [playlist de videoaulas no YouTube](https://youtube.com/playlist?list=PL7Xpx-hrPv-GUMXGpajmfLqdCZf3VMN4u).
+:::
 
 ## Conteúdo
 

@@ -1,6 +1,8 @@
 # Avaliação de Impacto de Políticas Públicas — material didático em R
 
-Aulas práticas, exercícios e soluções que preparei e conduzi como monitor da disciplina **Avaliação de Políticas Públicas (AVPP)**, do curso de Gestão Pública da **Universidade Federal de Minas Gerais (UFMG)**, no 2º semestre de 2024.
+Aulas práticas, exercícios e soluções que preparei e conduzi como monitor da disciplina **Avaliação de Políticas Públicas (AVPP)**, ministrada pelo **Prof. Felipe Nunes** no curso de Gestão Pública da **Universidade Federal de Minas Gerais (UFMG)**, no 2º semestre de 2024.
+
+Mais materiais e as videoaulas da disciplina estão no [site do Prof. Felipe Nunes](https://www.felipenunescp.com/teaching.html) e na [playlist do YouTube](https://youtube.com/playlist?list=PL7Xpx-hrPv-GUMXGpajmfLqdCZf3VMN4u).
 
 O material cobre, com dados reais e simulados, os principais desenhos de **inferência causal** usados para avaliar políticas públicas, todos implementados em **R** e documentados em **Quarto**.
 
@@ -49,7 +51,7 @@ Algumas aulas baixam dados da internet na primeira execução e salvam uma cópi
 
 - Material preparado por **João Paulo Dellasta** (doutor em Ciência Política pela UFMG), que atuou como monitor da disciplina durante o doutorado.
 - Colaboração de **João Cardoso L. Camargos** nas aulas de Diferenças em Diferenças, RDD, propensity score e na revisão final.
-- A Aula 1 adapta material do Prof. **Felipe Nunes** (UFMG).
+- Professor responsável pela disciplina: **Prof. Felipe Nunes** (UFMG) — [felipenunescp.com](https://www.felipenunescp.com/). A Aula 1 adapta material dele.
 - Exemplos e dados adaptados de: Gertler et al., *Avaliação de Impacto na Prática* (Banco Mundial); Bailey, *Real Stats*; Imai, *Quantitative Social Science*; Wooldridge, *Introdução à Econometria*; Angrist e Pischke, *Mastering 'Metrics*; Andrew Heiss, *Program Evaluation for Public Service*; Simon Munzert, tutorial de RDD.
 
 ## Licença
